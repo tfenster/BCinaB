@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  gui:
+    image: arssolvendi.azurecr.io/bcinab-gui:alpha1
+    depends_on:
+      - api
+    links:
+      - api
+    ports:
+      - 8080:80
+    networks:
+      - backend
+      - frontend
+
+  api:
+    image: arssolvendi.azurecr.io/bcinab-api:alpha1
+    volumes:
+      - source: '\\.\pipe\docker_engine'
+        target: '\\.\pipe\docker_engine'
+        type: npipe
+    networks:
+      - backend
+
+networks:
+  frontend:
+    driver: nat
+  backend:
+    driver: nat
