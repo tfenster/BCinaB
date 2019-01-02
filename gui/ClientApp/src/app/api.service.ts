@@ -11,6 +11,7 @@ import {
   HttpErrorResponse
 } from "@angular/common/http";
 import { throwError } from "rxjs";
+import { BaseData } from "./model/baseData";
 
 const API_URL = environment.apiUrl;
 
@@ -26,14 +27,20 @@ export class ApiService {
   }
 
   // API: POST /container
-  public createContainer(image: Image, tag: Tag): Observable<any> {
+  public createContainer(
+    image: Image,
+    tag: Tag,
+    base: BaseData
+  ): Observable<any> {
     const body = {
       Registry: image.Registry,
       Repository: image.Repository,
       Image: image.Image,
       Tag: TagHelper.resultingTag(tag),
-      AcceptEula: true,
-      BreakOnError: false
+      AcceptEula: base.acceptEula,
+      BreakOnError: false,
+      Name: base.name,
+      UseSsl: base.useSsl
     };
     const headers = new HttpHeaders({
       "Content-Type": "application/json; charset=UTF-8"

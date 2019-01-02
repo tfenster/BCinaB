@@ -43,20 +43,21 @@
     <ng-container matColumnDef="Actions">
       <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td mat-cell *matCellDef="let row">
-        <button mat-icon-button color="warn" (click)="deleteContainer(row.Id,
-          $event)">
+        <button mat-icon-button color="warn"
+          (click)="openDeleteConfirmDialog(row,
+          $event)" matTooltip="delete">
           <mat-icon>delete_outline</mat-icon>
         </button>
         <button mat-icon-button color="primary" *ngIf="row.State === 'exited'"
-          (click)="startContainer(row.Id, $event)">
+          (click)="startContainer(row.Id, $event)" matTooltip="start">
           <mat-icon>play_circle_outline</mat-icon>
         </button>
         <button mat-icon-button color="primary" *ngIf="row.State === 'running'"
-          (click)="stopContainer(row.Id, $event)">
+          (click)="stopContainer(row.Id, $event)" matTooltip="stop">
           <mat-icon>pause_circle_outline</mat-icon>
         </button>
         <button mat-icon-button color="primary" *ngIf="row.State === 'running'"
-          (click)="restartContainer(row.Id, $event)">
+          (click)="restartContainer(row.Id, $event)" matTooltip="restart">
           <mat-icon>loop</mat-icon>
         </button>
       </td>

@@ -137,6 +137,8 @@ namespace api.Controllers
                 var Env = new List<string>();
                 if (container.AcceptEula)
                     Env.Add("accept_eula=Y");
+                if (container.UseSsl)
+                    Env.Add("usessl=Y");
                 if (!container.BreakOnError)
                     Env.Add("BreakOnError=N");
                 var hostConf = new HostConfig();
@@ -149,7 +151,9 @@ namespace api.Controllers
                     {
                         Image = fqin,
                         Env = Env,
-                        HostConfig = hostConf
+                        HostConfig = hostConf,
+                        Name = container.Name,
+                        Hostname = container.Name
                     }
                 );
                 var started = await GetClient().Containers.StartContainerAsync(createResp.ID,
