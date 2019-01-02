@@ -72,8 +72,15 @@
           class="element-detail"
           [@detailExpand]="row == expandedRow ? 'expanded' : 'collapsed'">
           <div class="element-fulldetail">
-            Created: {{ row.DisplayCreated }}<br />Ports: {{ row.PortList
-            }}<br />Id: {{ row.Id }}
+            <mat-list>
+              <mat-list-item>Created: {{ row.DisplayCreated }}</mat-list-item>
+              <mat-list-item>Ports: {{ row.PortList }}</mat-list-item>
+              <mat-list-item>Id: {{ row.Id }}</mat-list-item>
+              <mat-list-item>Labels:</mat-list-item>
+              <mat-list-item *ngFor="let label of row.DisplayLabels">
+                &nbsp;&nbsp;{{ label }}
+              </mat-list-item>
+            </mat-list>
           </div>
         </div>
       </td>

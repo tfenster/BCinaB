@@ -13,6 +13,8 @@ export class Container {
   Command: string;
   Created: string;
   DisplayCreated: string;
+  Labels: any;
+  DisplayLabels: string[] = [];
 
   constructor(values: Object = {}) {
     Object.assign(this, values);
@@ -30,5 +32,16 @@ export class Container {
       this.PortList += Port.PrivatePort;
       sep = ", ";
     });
+
+    for (var key in this.Labels) {
+      if (
+        this.Labels.hasOwnProperty(key) &&
+        key != "eula" &&
+        key != "legal" &&
+        this.Labels[key] != ""
+      ) {
+        this.DisplayLabels.push(key + ": " + this.Labels[key]);
+      }
+    }
   }
 }
