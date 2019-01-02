@@ -24,7 +24,7 @@ RUN dotnet publish "api.csproj" -c Release -o /app
 
 FROM base AS final
 
-USER ContainerUser
+USER ContainerAdministrator
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "api.dll"]
