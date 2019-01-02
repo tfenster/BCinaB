@@ -16,6 +16,7 @@ import { Tag, TagHelper } from "../model/tag";
 import * as signalR from "@aspnet/signalr";
 import { environment } from "src/environments/environment";
 import { ProgressMessage, Progress } from "../model/progressMessage";
+import { BaseData } from "../model/baseData";
 
 export interface ImageDialogData {
   images: Image[];
@@ -28,6 +29,14 @@ export interface TagEntryDialogData {
 export interface PullConfirmDialogData {
   selectedImage: Image;
   tag: Tag;
+}
+
+export interface DeleteConfirmDialogData {
+  container: Container;
+}
+
+export interface BaseEntryDialogData {
+  base: BaseData;
 }
 
 const HUB_URL = environment.hubUrl;
@@ -55,6 +64,7 @@ export class FetchDataComponent implements OnInit {
   selectedImage: Image;
   images: Image[] = ImageHelper.GetAll();
   tag: Tag;
+  base: BaseData;
   showAlert: boolean = false;
   alertMessage: string = "";
 
@@ -108,13 +118,27 @@ export class FetchDataComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result != undefined) {
         this.tag = result;
+        this.openBaseEntryDialog();
+      }
+    });
+  }
+
+  openBaseEntryDialog(): void {
+    const dialogRef = this.dialog.open(BaseEntryDialog, {
+      width: "650px",
+      data: { base: { name: "", acceptEula: false, useSsl: true } }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != undefined) {
+        this.base = result;
         this.createContainer();
       }
     });
   }
 
   createContainer(): void {
-    this.api.createContainer(this.selectedImage, this.tag).subscribe(
+    this.api.createContainer(this.selectedImage, this.tag, this.base).subscribe(
       response => {
         if (response == "image not available locally") {
           this.openPullConfirmDialog();
@@ -160,8 +184,7 @@ export class FetchDataComponent implements OnInit {
     );
   }
 
-  deleteContainer(id: string, $event: any): void {
-    $event.stopPropagation();
+  deleteContainer(id: string): void {
     this.api.deleteContainer(id).subscribe(
       response => {
         this.snackBar.open("Container deleted", "close");
@@ -176,6 +199,18 @@ export class FetchDataComponent implements OnInit {
       this.showAlert = true;
       this.alertMessage = e;
     }
+  }
+
+  openDeleteConfirmDialog(selectedContainer: Container, $event: any): void {
+    $event.stopPropagation();
+    const dialogRef = this.dialog.open(DeleteConfirmDialog, {
+      width: "650px",
+      data: { container: selectedContainer.Name }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != null) this.deleteContainer(selectedContainer.Id);
+    });
   }
 
   openPullConfirmDialog(): void {
@@ -234,6 +269,21 @@ export class FetchDataComponent implements OnInit {
       this.snackBar.open("Image pulled", "Close");
       this.createContainer();
     });
+  }
+}
+
+@Component({
+  selector: "app-delete-confirm-dialog",
+  templateUrl: "dialogs/delete-confirm.dialog.html"
+})
+export class DeleteConfirmDialog {
+  constructor(
+    public dialogRef: MatDialogRef<PullConfirmDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DeleteConfirmDialogData
+  ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 }
 
@@ -303,6 +353,22 @@ export class TagEntryDialog {
 
   resultingTag(): string {
     return TagHelper.resultingTag(this.tag);
+  }
+}
+
+@Component({
+  selector: "base-entry-dialog",
+  styleUrls: ["dialogs/base-entry.dialog.css"],
+  templateUrl: "dialogs/base-entry.dialog.html"
+})
+export class BaseEntryDialog {
+  constructor(
+    public dialogRef: MatDialogRef<BaseEntryDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: BaseEntryDialogData
+  ) {}
+
+  onCancelClick(): void {
+    this.dialogRef.close();
   }
 }
 

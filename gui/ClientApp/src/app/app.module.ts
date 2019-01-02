@@ -13,7 +13,9 @@ import {
   ImageSelectDialog,
   TagEntryDialog,
   PullConfirmDialog,
-  PullProgressDialog
+  PullProgressDialog,
+  DeleteConfirmDialog,
+  BaseEntryDialog
 } from "./fetch-data/fetch-data.component";
 import { MaterialModule } from "./material-module";
 
@@ -29,13 +31,17 @@ import { HttpClientModule } from "@angular/common/http";
     ImageSelectDialog,
     TagEntryDialog,
     PullConfirmDialog,
-    PullProgressDialog
+    PullProgressDialog,
+    DeleteConfirmDialog,
+    BaseEntryDialog
   ],
   entryComponents: [
     ImageSelectDialog,
     TagEntryDialog,
     PullConfirmDialog,
-    PullProgressDialog
+    PullProgressDialog,
+    DeleteConfirmDialog,
+    BaseEntryDialog
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: "ng-cli-universal" }),

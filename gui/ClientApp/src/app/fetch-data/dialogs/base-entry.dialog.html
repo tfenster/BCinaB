@@ -1,0 +1,26 @@
+<h1 mat-dialog-title>Create a new container</h1>
+<div mat-dialog-content>
+  <p>
+    What base data do you want to use for the container?
+  </p>
+  <div class="flexcolumn">
+    <mat-form-field>
+      <input
+        matInput
+        [(ngModel)]="data.base.name"
+        placeholder="Container name (hostname will be the same)"
+        cdkFocusInitial
+        />
+    </mat-form-field>
+
+    <mat-checkbox
+      [(ngModel)]="data.base.acceptEula">Accept <a
+        href="https://go.microsoft.com/fwlink/?linkid=861843">EULA</a></mat-checkbox>
+    <mat-checkbox
+      [(ngModel)]="data.base.useSsl">Use SSL for the Web Client</mat-checkbox>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="data.base">Create</button>
+</div>

@@ -42,3 +42,8 @@ tr.element-row:not(.expanded-row):active {
 .mat-icon-button {
   outline: none;
 }
+
+.mat-list .mat-list-item {
+  height: auto;
+  font-size: 14px;
+}

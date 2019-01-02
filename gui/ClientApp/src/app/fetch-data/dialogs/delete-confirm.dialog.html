@@ -1,0 +1,7 @@
+<h1 mat-dialog-title>Do you want to delete {{ data.container }}? </h1>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" cdkFocusInitial>No</button>
+  <button mat-button [mat-dialog-close]="data.container">
+    Yes
+  </button>
+</div>
