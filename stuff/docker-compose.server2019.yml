@@ -13,7 +13,7 @@ services:
       - frontend
 
   api:
-    image: arssolvendi.azurecr.io/bcinab-api:alpha1
+    image: arssolvendi.azurecr.io/bcinab-api:alpha2
     volumes:
       - source: '\\.\pipe\docker_engine'
         target: '\\.\pipe\docker_engine'
