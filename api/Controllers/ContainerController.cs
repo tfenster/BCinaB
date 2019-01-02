@@ -130,6 +130,8 @@ namespace api.Controllers
             {
                 return Ok("image not available locally");
             }
+
+            var sysInfo = await GetClient().System.GetSystemInfoAsync();
             try
             {
                 var Env = new List<string>();
@@ -137,16 +139,17 @@ namespace api.Controllers
                     Env.Add("accept_eula=Y");
                 if (!container.BreakOnError)
                     Env.Add("BreakOnError=N");
-                long mem4G = 4294967296;  // 4G
+                var hostConf = new HostConfig();
+                if (sysInfo.Isolation == "hyperv")
+                {
+                    hostConf.Memory = 4294967296; // 4G
+                }
                 var createResp = await GetClient().Containers.CreateContainerAsync(
                     new CreateContainerParameters()
                     {
                         Image = fqin,
                         Env = Env,
-                        HostConfig = new HostConfig()
-                        {
-                            Memory = mem4G
-                        }
+                        HostConfig = hostConf
                     }
                 );
                 var started = await GetClient().Containers.StartContainerAsync(createResp.ID,
