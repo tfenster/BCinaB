@@ -137,8 +137,8 @@ namespace api.Controllers
                 var Env = new List<string>();
                 if (container.AcceptEula)
                     Env.Add("accept_eula=Y");
-                if (container.UseSsl)
-                    Env.Add("usessl=Y");
+                if (!container.UseSsl)
+                    Env.Add("usessl=N");
                 if (!container.BreakOnError)
                     Env.Add("BreakOnError=N");
                 var hostConf = new HostConfig();
