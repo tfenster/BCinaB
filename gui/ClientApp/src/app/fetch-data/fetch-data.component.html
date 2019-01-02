@@ -1,0 +1,93 @@
+<mat-form-field>
+  <input
+    matInput
+    (keyup)="applyFilter($event.target.value)"
+    placeholder="Filter"
+    />
+</mat-form-field>
+
+<div style="float: right;">
+  <button mat-icon-button color="primary" (click)="openImageSelectDialog()">
+    <mat-icon>add_box_outline</mat-icon>
+  </button>
+  new container
+</div>
+
+<div *ngIf="showAlert"
+  class="alert alert-danger" style="float: none">
+  {{ alertMessage }}
+</div>
+
+<div>
+  <table mat-table [dataSource]="containers" matSort multiTemplateDataRows>
+    <ng-container matColumnDef="Name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let row">{{ row.Name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="Image">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Image</th>
+      <td mat-cell *matCellDef="let row">{{ row.Image }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="State">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>State</th>
+      <td mat-cell *matCellDef="let row">{{ row.State }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="Status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let row">{{ row.Status }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="Actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-icon-button color="warn" (click)="deleteContainer(row.Id,
+          $event)">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" *ngIf="row.State === 'exited'"
+          (click)="startContainer(row.Id, $event)">
+          <mat-icon>play_circle_outline</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" *ngIf="row.State === 'running'"
+          (click)="stopContainer(row.Id, $event)">
+          <mat-icon>pause_circle_outline</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" *ngIf="row.State === 'running'"
+          (click)="restartContainer(row.Id, $event)">
+          <mat-icon>loop</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="expandedDetail">
+      <td
+        mat-cell
+        *matCellDef="let row"
+        [attr.colspan]="displayedColumns.length">
+        <div
+          class="element-detail"
+          [@detailExpand]="row == expandedRow ? 'expanded' : 'collapsed'">
+          <div class="element-fulldetail">
+            Created: {{ row.DisplayCreated }}<br />Ports: {{ row.PortList
+            }}<br />Id: {{ row.Id }}
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      class="element-row"
+      [class.expanded-row]="expandedRow === row"
+      (click)="expandedRow= expandedRow === row ? null : row"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: ['expandedDetail']"
+      class="detail-row"></tr>
+  </table>
+</div>

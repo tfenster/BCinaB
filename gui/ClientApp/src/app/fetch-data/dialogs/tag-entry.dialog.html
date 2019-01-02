@@ -1,0 +1,57 @@
+<h1 mat-dialog-title>Create a new container</h1>
+<div mat-dialog-content>
+  <p>
+    Which tag for image "{{ data.selectedImage.Label }}" do you want to use?
+  </p>
+  <div class="flexcolumn">
+    <mat-form-field hintLabel="e.g. 2017 or 2018"
+      *ngIf="data.selectedImage.NeedsMajor == true">
+      <input
+        matInput
+        required
+        [(ngModel)]="tag.Major"
+        placeholder="Major release"
+        cdkFocusInitial
+        />
+    </mat-form-field>
+
+    <mat-form-field hintLabel="e.g. cu5 or cu22"
+      *ngIf="data.selectedImage.CuBased == true">
+      <input
+        matInput
+        [(ngModel)]="tag.Cu"
+        placeholder="Cumulative update"
+        />
+    </mat-form-field>
+
+    <mat-form-field hintLabel="e.g. 12.1.21581.0 or 13.1.25940.0"
+      *ngIf="data.selectedImage.CuBased == false">
+      <input
+        matInput
+        [(ngModel)]="tag.Build"
+        placeholder="Build number"
+        />
+    </mat-form-field>
+
+    <mat-form-field hintLabel="e.g. de or dk">
+      <input
+        matInput
+        [(ngModel)]="tag.Country"
+        placeholder="Country"
+        />
+    </mat-form-field>
+
+    <mat-form-field hintLabel="2016 or 2019">
+      <input
+        matInput
+        [(ngModel)]="tag.Os"
+        placeholder="Windows Server version"
+        />
+    </mat-form-field>
+  </div>
+  <p>&nbsp;<br />Resulting tag: {{ resultingTag() }}</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="tag">Next</button>
+</div>

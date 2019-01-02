@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Do you want to pull {{
+  getFqin(data.selectedImage) }}:{{ getResultingTag(data.tag) }}? </h1>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()" cdkFocusInitial>No</button>
+  <button mat-button [mat-dialog-close]="data.tag">
+    Yes
+  </button>
+</div>

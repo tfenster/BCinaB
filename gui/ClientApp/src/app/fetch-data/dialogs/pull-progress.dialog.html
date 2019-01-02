@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Pull progress</h1>
+<mat-list>
+  <mat-list-item *ngFor="let progress of progresses">
+    <mat-progress-bar mode="determinate" [value]="percentage(progress)"
+      style="width:25%;"></mat-progress-bar>
+    &nbsp;&nbsp;{{ text(progress) }}
+  </mat-list-item>
+</mat-list>

@@ -1,0 +1,19 @@
+POST http://localhost:5000/api/container
+Content-Type: application/json; charset=UTF-8
+
+{
+    "AcceptEula": true,
+"BreakOnError": false,
+"Image": "onprem",
+"Registry": "mcr.microsoft.com",
+"Repository": "businesscentral",
+"Tag": "ltsc2019",
+}
+
+###
+
+GET http://172.31.74.7:80/api/container
+
+###
+
+GET http://localhost:5000/api/container

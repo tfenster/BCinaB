@@ -1,0 +1,44 @@
+table {
+  width: 100%;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  /*width: 100%;*/
+}
+
+.mat-header-cell {
+  color: #0d839d;
+  font-size: 14px;
+}
+
+tr.detail-row {
+  height: 0;
+}
+
+tr.element-row:not(.expanded-row):hover {
+  background: #e2f0f3;
+}
+
+tr.element-row:not(.expanded-row):active {
+  background: #e2f0f3;
+}
+
+.element-row td {
+  border-bottom-width: 0;
+}
+
+.element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.element-fulldetail {
+  padding-left: 16px;
+  padding-bottom: 16px;
+  padding-right: 16px;
+}
+
+.mat-icon-button {
+  outline: none;
+}
