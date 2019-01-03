@@ -122,9 +122,15 @@ namespace api.Controllers
                 All = true,
             });
             var tag = "";
+            var repo = "";
+            var reg = "";
+            if (container.Registry != null && container.Registry != "")
+                reg = $"{container.Registry}/";
+            if (container.Repository != null && container.Repository != "")
+                repo = $"{container.Repository}/";
             if (container.Tag != "")
                 tag = $":{container.Tag}";
-            var fqin = $"{container.Registry}/{container.Repository}/{container.Image}{tag}";
+            var fqin = $"{reg}{repo}/{container.Image}{tag}";
             var image = images.Where(i => i.RepoTags != null && i.RepoTags.Count > 0 && i.RepoTags[0] == fqin).FirstOrDefault();
             if (image == null)
             {
