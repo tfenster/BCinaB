@@ -130,7 +130,7 @@ namespace api.Controllers
                 repo = $"{container.Repository}/";
             if (container.Tag != "")
                 tag = $":{container.Tag}";
-            var fqin = $"{reg}{repo}/{container.Image}{tag}";
+            var fqin = $"{reg}{repo}{container.Image}{tag}";
             var image = images.Where(i => i.RepoTags != null && i.RepoTags.Count > 0 && i.RepoTags[0] == fqin).FirstOrDefault();
             if (image == null)
             {
