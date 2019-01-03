@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   gui:
-    image: arssolvendi.azurecr.io/bcinab-gui:alpha2
+    image: arssolvendi.azurecr.io/bcinab-gui:alpha3
     depends_on:
       - api
     links:
@@ -13,7 +13,7 @@ services:
       - frontend
 
   api:
-    image: arssolvendi.azurecr.io/bcinab-api:alpha2
+    image: arssolvendi.azurecr.io/bcinab-api:alpha3
     volumes:
       - source: '\\.\pipe\docker_engine_windows'
         target: '\\.\pipe\docker_engine'

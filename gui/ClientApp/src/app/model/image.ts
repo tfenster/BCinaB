@@ -10,7 +10,11 @@ export interface Image {
 
 export class ImageHelper {
   static GetFqin(image: Image): string {
-    return image.Registry + "/" + image.Repository + "/" + image.Image;
+    let reg = "";
+    let repo = "";
+    if (image.Registry != null) reg = image.Registry + "/";
+    if (image.Repository != null) repo = image.Repository + "/";
+    return reg + repo + image.Image;
   }
 
   static GetAll(): Image[] {
