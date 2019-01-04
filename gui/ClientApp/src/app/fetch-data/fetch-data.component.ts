@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Inject } from "@angular/core";
 import { MatSort, MatTableDataSource, MatSnackBar } from "@angular/material";
-import { ApiService } from "../api.service";
+import { ApiService, GuiDef } from "../api.service";
 import { Container } from "../model/container";
 import { Observable } from "rxjs";
 import {
@@ -138,7 +138,12 @@ export class FetchDataComponent implements OnInit {
   }
 
   createContainer(): void {
-    this.api.createContainer(this.selectedImage, this.tag, this.base).subscribe(
+    let guiDef: GuiDef = {
+      image: this.selectedImage,
+      tag: this.tag,
+      base: this.base
+    };
+    this.api.createContainer(guiDef).subscribe(
       response => {
         if (response == "image not available locally") {
           this.openPullConfirmDialog();

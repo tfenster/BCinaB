@@ -11,5 +11,6 @@ namespace api.Models
         public bool BreakOnError { get; set; }
         public string Name { get; set; }
         public bool UseSsl { get; set; }
+        public string GuiDef { get; set; }
     }
 }

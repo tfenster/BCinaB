@@ -147,11 +147,16 @@ namespace api.Controllers
                     Env.Add("usessl=N");
                 if (!container.BreakOnError)
                     Env.Add("BreakOnError=N");
+
                 var hostConf = new HostConfig();
                 if (sysInfo.Isolation == "hyperv")
                 {
                     hostConf.Memory = 4294967296; // 4G
                 }
+
+                var Labels = new Dictionary<string, string>();
+                Labels.Add("bcinab.guidef", $"{container.GuiDef}");
+
                 var createResp = await GetClient().Containers.CreateContainerAsync(
                     new CreateContainerParameters()
                     {
@@ -159,7 +164,8 @@ namespace api.Controllers
                         Env = Env,
                         HostConfig = hostConf,
                         Name = container.Name,
-                        Hostname = container.Name
+                        Hostname = container.Name,
+                        Labels = Labels
                     }
                 );
                 var started = await GetClient().Containers.StartContainerAsync(createResp.ID,

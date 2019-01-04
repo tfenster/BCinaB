@@ -15,6 +15,12 @@ import { BaseData } from "./model/baseData";
 
 const API_URL = environment.apiUrl;
 
+export interface GuiDef {
+  image: Image;
+  tag: Tag;
+  base: BaseData;
+}
+
 @Injectable()
 export class ApiService {
   constructor(private http: HttpClient) {}
@@ -27,20 +33,17 @@ export class ApiService {
   }
 
   // API: POST /container
-  public createContainer(
-    image: Image,
-    tag: Tag,
-    base: BaseData
-  ): Observable<any> {
+  public createContainer(guiDef: GuiDef): Observable<any> {
     const body = {
-      Registry: image.Registry,
-      Repository: image.Repository,
-      Image: image.Image,
-      Tag: TagHelper.resultingTag(tag),
-      AcceptEula: base.acceptEula,
+      Registry: guiDef.image.Registry,
+      Repository: guiDef.image.Repository,
+      Image: guiDef.image.Image,
+      Tag: TagHelper.resultingTag(guiDef.tag),
+      AcceptEula: guiDef.base.acceptEula,
       BreakOnError: false,
-      Name: base.name,
-      UseSsl: base.useSsl
+      Name: guiDef.base.name,
+      UseSsl: guiDef.base.useSsl,
+      GuiDef: JSON.stringify(guiDef)
     };
     const headers = new HttpHeaders({
       "Content-Type": "application/json; charset=UTF-8"

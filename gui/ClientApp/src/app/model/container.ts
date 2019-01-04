@@ -39,6 +39,7 @@ export class Container {
         this.Labels.hasOwnProperty(key) &&
         key != "eula" &&
         key != "legal" &&
+        key != "bcinab.guidef" &&
         this.Labels[key] != ""
       ) {
         this.DisplayLabels.push(key + ": " + this.Labels[key]);
@@ -48,5 +49,9 @@ export class Container {
     for (var network in networks) {
       this.IPs.push(networks[network]["IPAddress"] + " in network " + network);
     }
+  }
+
+  webclientURL(): string {
+    return;
   }
 }
