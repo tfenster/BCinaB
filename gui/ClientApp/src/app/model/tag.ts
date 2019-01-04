@@ -17,7 +17,8 @@ export class TagHelper {
     if (tag.Cu != "") retTag += (retTag != "" ? "-" : "") + tag.Cu;
     if (tag.Country != "") retTag += (retTag != "" ? "-" : "") + tag.Country;
     if (tag.Os != "") retTag += (retTag != "" ? "-" : "") + "ltsc" + tag.Os;
-
+    if (retTag == "") retTag = ":latest";
+    
     return retTag;
   }
 }
