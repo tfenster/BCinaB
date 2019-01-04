@@ -49,6 +49,12 @@
           $event)" matTooltip="delete">
           <mat-icon>delete_outline</mat-icon>
         </button>
+        <a mat-icon-button color="primary" *ngIf="row.GuiDef != undefined &&
+          row.State === 'running'" (click)="$event.stopPropagation();"
+          [href]="row.webclientURL()" target="_blank" matTooltip="start
+          WebClient">
+          <mat-icon>open_in_new</mat-icon>
+        </a>
         <button mat-icon-button color="primary" *ngIf="row.State === 'exited'"
           (click)="startContainer(row.Id, $event)" matTooltip="start">
           <mat-icon>play_circle_outline</mat-icon>
