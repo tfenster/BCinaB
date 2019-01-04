@@ -80,6 +80,10 @@
               <mat-list-item *ngFor="let label of row.DisplayLabels">
                 &nbsp;&nbsp;{{ label }}
               </mat-list-item>
+              <mat-list-item>IPs:</mat-list-item>
+              <mat-list-item *ngFor="let ip of row.IPs">
+                &nbsp;&nbsp;{{ ip }}
+              </mat-list-item>
             </mat-list>
           </div>
         </div>

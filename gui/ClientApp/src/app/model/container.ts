@@ -15,6 +15,7 @@ export class Container {
   DisplayCreated: string;
   Labels: any;
   DisplayLabels: string[] = [];
+  IPs: string[] = [];
 
   constructor(values: Object = {}) {
     Object.assign(this, values);
@@ -42,6 +43,10 @@ export class Container {
       ) {
         this.DisplayLabels.push(key + ": " + this.Labels[key]);
       }
+    }
+    let networks = values["NetworkSettings"]["Networks"];
+    for (var network in networks) {
+      this.IPs.push(networks[network]["IPAddress"] + " in network " + network);
     }
   }
 }
