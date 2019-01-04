@@ -32,7 +32,8 @@
 
     <ng-container matColumnDef="State">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>State</th>
-      <td mat-cell *matCellDef="let row">{{ row.State }}</td>
+      <td mat-cell *matCellDef="let row" [matTooltip]="row.Status">{{ row.State
+        }}</td>
     </ng-container>
 
     <ng-container matColumnDef="Status">
@@ -73,9 +74,9 @@
           [@detailExpand]="row == expandedRow ? 'expanded' : 'collapsed'">
           <div class="element-fulldetail">
             <mat-list>
+              <mat-list-item>Status: {{ row.Status }}</mat-list-item>
               <mat-list-item>Created: {{ row.DisplayCreated }}</mat-list-item>
               <mat-list-item>Ports: {{ row.PortList }}</mat-list-item>
-              <mat-list-item>Id: {{ row.Id }}</mat-list-item>
               <mat-list-item>Labels:</mat-list-item>
               <mat-list-item *ngFor="let label of row.DisplayLabels">
                 &nbsp;&nbsp;{{ label }}
@@ -84,6 +85,7 @@
               <mat-list-item *ngFor="let ip of row.IPs">
                 &nbsp;&nbsp;{{ ip }}
               </mat-list-item>
+              <mat-list-item>Id: {{ row.Id }}</mat-list-item>
             </mat-list>
           </div>
         </div>

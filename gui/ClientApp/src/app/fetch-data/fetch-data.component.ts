@@ -57,7 +57,7 @@ const HUB_URL = environment.hubUrl;
   ]
 })
 export class FetchDataComponent implements OnInit {
-  displayedColumns: string[] = ["Name", "State", "Status", "Image", "Actions"];
+  displayedColumns: string[] = ["Name", "State", "Image", "Actions"];
   expandedRow: Container | null;
   containersObservable: Observable<Container[]>;
   containers: MatTableDataSource<Container>;
