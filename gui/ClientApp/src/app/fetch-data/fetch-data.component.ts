@@ -242,6 +242,8 @@ export class FetchDataComponent implements OnInit {
     });
 
     let progressIDs: string[] = [];
+    let pullGuid: string = "";
+    let keepaliveInterval: any;
 
     connection
       .start()
@@ -252,6 +254,9 @@ export class FetchDataComponent implements OnInit {
           ImageHelper.GetFqin(this.selectedImage),
           TagHelper.resultingTag(this.tag)
         );
+        keepaliveInterval = setInterval(() => {
+          connection.send("keepAlive", pullGuid);
+        }, 3000);
       });
     connection.on("pullProgress", (message: any) => {
       if (first) {
@@ -269,10 +274,14 @@ export class FetchDataComponent implements OnInit {
         currProgress.status = message.status;
       }
     });
+    connection.on("pullGuid", (message: any) => {
+      pullGuid = message;
+    });
     connection.on("pullFinished", () => {
       dialogRef.close();
       this.snackBar.open("Image pulled", "Close");
       this.createContainer();
+      clearInterval(keepaliveInterval);
     });
   }
 }

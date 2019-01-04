@@ -3,43 +3,84 @@ using Docker.DotNet.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace api.Hubs
 {
     public class ProgressHub : Hub
     {
-        private DockerClient _client;
         private IConfiguration _configuration;
+        private static readonly UTF8Encoding Utf8EncodingWithoutBom = new UTF8Encoding(false);
+        private static IDictionary<string, CancellationTokenSource> _tokens = new Dictionary<string, CancellationTokenSource>();
+        private static IDictionary<string, DateTime> _keepAlives = new Dictionary<string, DateTime>();
 
         public ProgressHub(IConfiguration configuration)
         {
             this._configuration = configuration;
         }
 
-        public async Task PullImage(string fqin, string tag)
+        public async void GetLog(string id)
         {
-            var progress = new Progress<JSONMessage>(async message =>
+            /*CancellationTokenSource cancellation = new CancellationTokenSource();
+            var myGuid = Guid.NewGuid().ToString();
+            _tokens.Add(myGuid, cancellation);
+            await Clients.Caller.SendAsync("log", myGuid);
+
+            using (var logs = await GetClient().Containers.GetContainerLogsAsync(id, new ContainerLogsParameters
             {
-                await Clients.Caller.SendAsync("pullProgress", message);
-            });
-            await GetClient().Images.CreateImageAsync(
-                new ImagesCreateParameters()
+                ShowStderr = true,
+                ShowStdout = true,
+            }, cancellation.Token))
+            {
+                using (var reader = new StreamReader(logs, Utf8EncodingWithoutBom))
                 {
-                    FromImage = fqin,
-                    Tag = tag
-                },
-                null,
-                progress
-            );
-            await Clients.Caller.SendAsync("pullFinished");
+                    string nextLine;
+                    while ((nextLine = await reader.ReadLineAsync()) != null)
+                    {
+                        if (IsBroken(myGuid))
+                        {
+                            Console.WriteLine("timeout");
+                        }
+                        else
+                        {
+                            await Clients.Caller.SendAsync("log", nextLine);
+                        }
+                    }
+                }
+            }*/
         }
 
-        private DockerClient GetClient()
+        public void KeepAlive(string guid)
         {
-            if (_client == null)
-                _client = new DockerClientConfiguration(new System.Uri(_configuration["EngineEndpoint"])).CreateClient();
-            return _client;
+            _keepAlives[guid] = DateTime.Now;
+        }
+
+        public static bool IsBroken(string guid)
+        {
+            return _keepAlives[guid].AddSeconds(10) < DateTime.Now;
+        }
+
+        public async void PullImage(string fqin, string tag)
+        {
+            CancellationTokenSource cancellation = new CancellationTokenSource();
+            var myGuid = Guid.NewGuid().ToString();
+            _keepAlives[myGuid] = DateTime.Now;
+            _tokens.Add(myGuid, cancellation);
+            PullImage pi = new PullImage(Clients, _configuration);
+            await pi.pull(myGuid, cancellation, fqin, tag, Context.ConnectionId);
+        }
+
+        public void Cancel(string guid)
+        {
+            if (_tokens.ContainsKey(guid))
+            {
+                var tokenSource = _tokens[guid];
+                tokenSource.Cancel();
+            }
         }
     }
 }
