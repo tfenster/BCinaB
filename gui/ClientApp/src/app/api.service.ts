@@ -34,15 +34,32 @@ export class ApiService {
 
   // API: POST /container
   public createContainer(guiDef: GuiDef): Observable<any> {
+    let env: string[] = [];
+
+    if (guiDef.base.acceptEula) env.push("accept_eula=Y");
+    if (!guiDef.base.useSsl) env.push("usessl=N");
+
+    if (guiDef.base.auth != undefined && guiDef.base.auth != "") {
+      env.push("auth=" + guiDef.base.auth);
+    }
+    if (guiDef.base.username != undefined && guiDef.base.username != "") {
+      env.push("username=" + guiDef.base.username);
+      guiDef.base.username = ""; // forget username for storage in container labels
+    }
+    if (guiDef.base.password != undefined && guiDef.base.password != "") {
+      env.push("password=" + guiDef.base.password);
+      guiDef.base.password = ""; // forget password for storage in container labels
+    }
+
+    env.push("ExitOnError=N");
+
     const body = {
       Registry: guiDef.image.Registry,
       Repository: guiDef.image.Repository,
       Image: guiDef.image.Image,
       Tag: TagHelper.resultingTag(guiDef.tag),
-      AcceptEula: guiDef.base.acceptEula,
-      BreakOnError: false,
       Name: guiDef.base.name,
-      UseSsl: guiDef.base.useSsl,
+      Env: env,
       GuiDef: JSON.stringify(guiDef)
     };
     const headers = new HttpHeaders({

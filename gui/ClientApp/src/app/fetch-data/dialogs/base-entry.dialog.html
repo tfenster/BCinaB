@@ -14,10 +14,35 @@
     </mat-form-field>
 
     <mat-checkbox
+      [(ngModel)]="data.base.useSsl">Use SSL for the Web Client</mat-checkbox>
+    <mat-form-field>
+      <mat-select [(value)]="data.base.auth" placeholder="Authentication type">
+        <mat-option></mat-option>
+        <mat-option value="NavUserPassword">NAV User</mat-option>
+        <mat-option value="Windows">Windows</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input
+        matInput
+        [(ngModel)]="data.base.username"
+        placeholder="Username"
+        />
+    </mat-form-field>
+
+    <mat-form-field>
+      <input
+        matInput
+        [(ngModel)]="data.base.password"
+        placeholder="Password"
+        type="password"
+        />
+    </mat-form-field>
+
+    <mat-checkbox
       [(ngModel)]="data.base.acceptEula">Accept <a
         href="https://go.microsoft.com/fwlink/?linkid=861843">EULA</a></mat-checkbox>
-    <mat-checkbox
-      [(ngModel)]="data.base.useSsl">Use SSL for the Web Client</mat-checkbox>
   </div>
 </div>
 <div mat-dialog-actions>

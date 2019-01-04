@@ -141,12 +141,7 @@ namespace api.Controllers
             try
             {
                 var Env = new List<string>();
-                if (container.AcceptEula)
-                    Env.Add("accept_eula=Y");
-                if (!container.UseSsl)
-                    Env.Add("usessl=N");
-                if (!container.BreakOnError)
-                    Env.Add("BreakOnError=N");
+                Env = Env.Union(container.Env).ToList<string>();
 
                 var hostConf = new HostConfig();
                 if (sysInfo.Isolation == "hyperv")

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace api.Models
 {
     public class BCContainer
@@ -7,10 +9,8 @@ namespace api.Models
         public string Image { get; set; }
         public string Tag { get; set; }
         public string ID { get; set; }
-        public bool AcceptEula { get; set; }
-        public bool BreakOnError { get; set; }
         public string Name { get; set; }
-        public bool UseSsl { get; set; }
+        public IList<string> Env { get; set; }
         public string GuiDef { get; set; }
     }
 }
