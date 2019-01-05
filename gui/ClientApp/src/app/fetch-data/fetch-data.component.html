@@ -32,7 +32,8 @@
 
     <ng-container matColumnDef="State">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>State</th>
-      <td mat-cell *matCellDef="let row">{{ row.State }}</td>
+      <td mat-cell *matCellDef="let row" [matTooltip]="row.Status">{{ row.State
+        }}</td>
     </ng-container>
 
     <ng-container matColumnDef="Status">
@@ -48,6 +49,17 @@
           $event)" matTooltip="delete">
           <mat-icon>delete_outline</mat-icon>
         </button>
+        <a mat-icon-button color="primary" *ngIf="row.GuiDef != undefined &&
+          row.State === 'running'" (click)="$event.stopPropagation();"
+          [href]="row.webclientURL()" target="_blank" matTooltip="start
+          WebClient">
+          <mat-icon>open_in_new</mat-icon>
+        </a>
+        <a mat-icon-button color="primary" *ngIf="row.State === 'running'"
+          (click)="$event.stopPropagation();"
+          [href]="'/showLog/'+row.Id" target="_blank" matTooltip="show logs">
+          <mat-icon>format_align_justify</mat-icon>
+        </a>
         <button mat-icon-button color="primary" *ngIf="row.State === 'exited'"
           (click)="startContainer(row.Id, $event)" matTooltip="start">
           <mat-icon>play_circle_outline</mat-icon>
@@ -73,13 +85,18 @@
           [@detailExpand]="row == expandedRow ? 'expanded' : 'collapsed'">
           <div class="element-fulldetail">
             <mat-list>
+              <mat-list-item>Status: {{ row.Status }}</mat-list-item>
               <mat-list-item>Created: {{ row.DisplayCreated }}</mat-list-item>
               <mat-list-item>Ports: {{ row.PortList }}</mat-list-item>
-              <mat-list-item>Id: {{ row.Id }}</mat-list-item>
               <mat-list-item>Labels:</mat-list-item>
               <mat-list-item *ngFor="let label of row.DisplayLabels">
                 &nbsp;&nbsp;{{ label }}
               </mat-list-item>
+              <mat-list-item>IPs:</mat-list-item>
+              <mat-list-item *ngFor="let ip of row.IPs">
+                &nbsp;&nbsp;{{ ip }}
+              </mat-list-item>
+              <mat-list-item>Id: {{ row.Id }}</mat-list-item>
             </mat-list>
           </div>
         </div>

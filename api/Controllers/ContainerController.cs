@@ -121,14 +121,14 @@ namespace api.Controllers
             {
                 All = true,
             });
-            var tag = "";
+            var tag = ":latest";
             var repo = "";
             var reg = "";
             if (container.Registry != null && container.Registry != "")
                 reg = $"{container.Registry}/";
             if (container.Repository != null && container.Repository != "")
                 repo = $"{container.Repository}/";
-            if (container.Tag != "")
+            if (container.Tag != null && container.Tag != "")
                 tag = $":{container.Tag}";
             var fqin = $"{reg}{repo}{container.Image}{tag}";
             var image = images.Where(i => i.RepoTags != null && i.RepoTags.Count > 0 && i.RepoTags[0] == fqin).FirstOrDefault();
@@ -141,17 +141,17 @@ namespace api.Controllers
             try
             {
                 var Env = new List<string>();
-                if (container.AcceptEula)
-                    Env.Add("accept_eula=Y");
-                if (!container.UseSsl)
-                    Env.Add("usessl=N");
-                if (!container.BreakOnError)
-                    Env.Add("BreakOnError=N");
+                Env = Env.Union(container.Env).ToList<string>();
+
                 var hostConf = new HostConfig();
                 if (sysInfo.Isolation == "hyperv")
                 {
                     hostConf.Memory = 4294967296; // 4G
                 }
+
+                var Labels = new Dictionary<string, string>();
+                Labels.Add("bcinab.guidef", $"{container.GuiDef}");
+
                 var createResp = await GetClient().Containers.CreateContainerAsync(
                     new CreateContainerParameters()
                     {
@@ -159,7 +159,8 @@ namespace api.Controllers
                         Env = Env,
                         HostConfig = hostConf,
                         Name = container.Name,
-                        Hostname = container.Name
+                        Hostname = container.Name,
+                        Labels = Labels
                     }
                 );
                 var started = await GetClient().Containers.StartContainerAsync(createResp.ID,

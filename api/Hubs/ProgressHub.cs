@@ -1,45 +1,64 @@
-using Docker.DotNet;
-using Docker.DotNet.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using api.Tasks;
 
 namespace api.Hubs
 {
     public class ProgressHub : Hub
     {
-        private DockerClient _client;
         private IConfiguration _configuration;
+        private static IDictionary<string, CancellationTokenSource> _tokens = new Dictionary<string, CancellationTokenSource>();
+        private static IDictionary<string, DateTime> _keepAlives = new Dictionary<string, DateTime>();
 
         public ProgressHub(IConfiguration configuration)
         {
             this._configuration = configuration;
         }
 
-        public async Task PullImage(string fqin, string tag)
+        public async void GetLog(string id)
         {
-            var progress = new Progress<JSONMessage>(async message =>
-            {
-                await Clients.Caller.SendAsync("pullProgress", message);
-            });
-            await GetClient().Images.CreateImageAsync(
-                new ImagesCreateParameters()
-                {
-                    FromImage = fqin,
-                    Tag = tag
-                },
-                null,
-                progress
-            );
-            await Clients.Caller.SendAsync("pullFinished");
+            ShowLogTask slt = new ShowLogTask(id);
+            initBackgroundTask(slt);
+            await slt.DoStuff();
         }
 
-        private DockerClient GetClient()
+        public async void PullImage(string fqin, string tag)
         {
-            if (_client == null)
-                _client = new DockerClientConfiguration(new System.Uri(_configuration["EngineEndpoint"])).CreateClient();
-            return _client;
+            PullImageTask pit = new PullImageTask(fqin, tag);
+            initBackgroundTask(pit);
+            await pit.DoStuff();
+        }
+
+        private void initBackgroundTask(BackgroundTask bt)
+        {
+            CancellationTokenSource cancellation = new CancellationTokenSource();
+            var myGuid = Guid.NewGuid().ToString();
+            _keepAlives[myGuid] = DateTime.Now;
+            _tokens.Add(myGuid, cancellation);
+            bt.SetBasics(Clients, _configuration, myGuid, cancellation, Context.ConnectionId);
+        }
+
+        public void KeepAlive(string guid)
+        {
+            _keepAlives[guid] = DateTime.Now;
+        }
+
+        public static bool IsBroken(string guid)
+        {
+            return _keepAlives[guid].AddSeconds(10) < DateTime.Now;
+        }
+
+        public void Cancel(string guid)
+        {
+            if (_tokens.ContainsKey(guid))
+            {
+                var tokenSource = _tokens[guid];
+                tokenSource.Cancel();
+            }
         }
     }
 }

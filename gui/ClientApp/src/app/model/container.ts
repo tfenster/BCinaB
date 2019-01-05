@@ -1,4 +1,5 @@
 import { Port } from "./port";
+import { GuiDef } from "../api.service";
 
 export class Container {
   Id: string;
@@ -15,6 +16,8 @@ export class Container {
   DisplayCreated: string;
   Labels: any;
   DisplayLabels: string[] = [];
+  IPs: string[] = [];
+  GuiDef: GuiDef;
 
   constructor(values: Object = {}) {
     Object.assign(this, values);
@@ -38,10 +41,27 @@ export class Container {
         this.Labels.hasOwnProperty(key) &&
         key != "eula" &&
         key != "legal" &&
+        key != "bcinab.guidef" &&
         this.Labels[key] != ""
       ) {
         this.DisplayLabels.push(key + ": " + this.Labels[key]);
       }
     }
+
+    if (this.Labels.hasOwnProperty("bcinab.guidef")) {
+      this.GuiDef = JSON.parse(this.Labels["bcinab.guidef"]);
+    }
+
+    let networks = values["NetworkSettings"]["Networks"];
+    for (var network in networks) {
+      this.IPs.push(networks[network]["IPAddress"]);
+    }
+  }
+
+  webclientURL(): string {
+    let url = "https://";
+    if (!this.GuiDef.base.useSsl) url = "http://";
+    url += this.IPs[0] + "/NAV";
+    return url;
   }
 }

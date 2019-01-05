@@ -21,6 +21,7 @@ import { MaterialModule } from "./material-module";
 
 import { ApiService } from "./api.service";
 import { HttpClientModule } from "@angular/common/http";
+import { ShowLogComponent } from "./show-log/show-log.component";
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { HttpClientModule } from "@angular/common/http";
     PullConfirmDialog,
     PullProgressDialog,
     DeleteConfirmDialog,
-    BaseEntryDialog
+    BaseEntryDialog,
+    ShowLogComponent
   ],
   entryComponents: [
     ImageSelectDialog,
@@ -49,7 +51,8 @@ import { HttpClientModule } from "@angular/common/http";
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: "", component: FetchDataComponent, pathMatch: "full" }
+      { path: "", component: FetchDataComponent, pathMatch: "full" },
+      { path: "showLog/:id", component: ShowLogComponent }
     ]),
     MaterialModule,
     MatNativeDateModule

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Inject } from "@angular/core";
 import { MatSort, MatTableDataSource, MatSnackBar } from "@angular/material";
-import { ApiService } from "../api.service";
+import { ApiService, GuiDef } from "../api.service";
 import { Container } from "../model/container";
 import { Observable } from "rxjs";
 import {
@@ -57,7 +57,7 @@ const HUB_URL = environment.hubUrl;
   ]
 })
 export class FetchDataComponent implements OnInit {
-  displayedColumns: string[] = ["Name", "State", "Status", "Image", "Actions"];
+  displayedColumns: string[] = ["Name", "State", "Image", "Actions"];
   expandedRow: Container | null;
   containersObservable: Observable<Container[]>;
   containers: MatTableDataSource<Container>;
@@ -138,7 +138,12 @@ export class FetchDataComponent implements OnInit {
   }
 
   createContainer(): void {
-    this.api.createContainer(this.selectedImage, this.tag, this.base).subscribe(
+    let guiDef: GuiDef = {
+      image: this.selectedImage,
+      tag: this.tag,
+      base: this.base
+    };
+    this.api.createContainer(guiDef).subscribe(
       response => {
         if (response == "image not available locally") {
           this.openPullConfirmDialog();
@@ -237,6 +242,8 @@ export class FetchDataComponent implements OnInit {
     });
 
     let progressIDs: string[] = [];
+    let pullGuid: string = "";
+    let keepaliveInterval: any;
 
     connection
       .start()
@@ -247,6 +254,9 @@ export class FetchDataComponent implements OnInit {
           ImageHelper.GetFqin(this.selectedImage),
           TagHelper.resultingTag(this.tag)
         );
+        keepaliveInterval = setInterval(() => {
+          connection.send("keepAlive", pullGuid);
+        }, 3000);
       });
     connection.on("pullProgress", (message: any) => {
       if (first) {
@@ -264,10 +274,14 @@ export class FetchDataComponent implements OnInit {
         currProgress.status = message.status;
       }
     });
+    connection.on("pullGuid", (message: any) => {
+      pullGuid = message;
+    });
     connection.on("pullFinished", () => {
       dialogRef.close();
       this.snackBar.open("Image pulled", "Close");
       this.createContainer();
+      clearInterval(keepaliveInterval);
     });
   }
 }
