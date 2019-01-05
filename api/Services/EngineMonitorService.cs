@@ -70,11 +70,22 @@ namespace api.Services
                     catch (FileNotFoundException)
                     {
                         // no access to hosts
+                        Console.WriteLine("could not change hosts file");
+                        return;
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        // no access to hosts
+                        Console.WriteLine("could not change hosts file");
                         return;
                     }
                     catch (IOException)
                     {
-                        if (tryCount == 5) return;  // only try five times and then give up
+                        if (tryCount == 5)
+                        {
+                            Console.WriteLine("could not change hosts file");
+                            return;  // only try five times and then give up
+                        }
                         Thread.Sleep(1000);
                         tryCount++;
                     }
