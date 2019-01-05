@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Hubs;
+using api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -17,9 +18,10 @@ namespace api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IEngineMonitorService ems)
         {
             Configuration = configuration;
+            ems.ListenToEngine();
         }
 
         public IConfiguration Configuration { get; }
@@ -37,6 +39,7 @@ namespace api
                 });
 
             services.AddSignalR();
+            services.AddSingleton<IEngineMonitorService, EngineMonitorService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -38,6 +38,13 @@ namespace api.Controllers
             return Ok(containers);
         }
 
+        [HttpGet("[action]/")]
+        public async Task<ActionResult<ContainerInspectResponse>> Details(string id)
+        {
+            var container = await GetClient().Containers.InspectContainerAsync(id);
+            return Ok(container);
+        }
+
         [HttpPost("[action]/")]
         public async Task<ActionResult> Start(string id)
         {

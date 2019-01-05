@@ -86,7 +86,7 @@ export class FetchDataComponent implements OnInit {
   getContainers() {
     this.api.getAllContainers().subscribe(containers => {
       this.containers.data = containers.map(
-        container => new Container(container)
+        container => new Container(container, this.api)
       );
     });
   }

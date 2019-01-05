@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "../environments/environment";
 import { Observable } from "rxjs/Observable";
 import { catchError } from "rxjs/operators";
-import { Container } from "./model/container";
+import { Container, ContainerInspect } from "./model/container";
 import { Image } from "./model/image";
 import { Tag, TagHelper } from "./model/tag";
 import {
@@ -29,6 +29,13 @@ export class ApiService {
   public getAllContainers(): Observable<Container[]> {
     return this.http
       .get<Container[]>(API_URL + "/container")
+      .pipe(catchError(this.handleError));
+  }
+
+  // API: GET /container/Details
+  public getContainerInspect(id: string): Observable<ContainerInspect> {
+    return this.http
+      .get<ContainerInspect>(API_URL + "/container/details?id=" + id)
       .pipe(catchError(this.handleError));
   }
 
