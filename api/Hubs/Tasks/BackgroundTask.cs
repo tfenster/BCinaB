@@ -4,7 +4,7 @@ using Docker.DotNet;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 
-namespace api.Tasks
+namespace api.Hubs.Tasks
 {
 
     public abstract class BackgroundTask

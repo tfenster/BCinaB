@@ -7,7 +7,7 @@ using Docker.DotNet.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 
-namespace api.Tasks
+namespace api.Hubs.Tasks
 {
 
     public class PullImageTask : BackgroundTask
