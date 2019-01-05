@@ -25,6 +25,21 @@ export interface GuiDef {
 export class ApiService {
   constructor(private http: HttpClient) {}
 
+  // API: GET /system/navcontainerhepler
+  public getNavcontainerhelper(): Observable<string> {
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json; charset=UTF-8"
+    });
+    let ret: Observable<string> = this.http
+      .get(API_URL + "/system/navcontainerhelper", {
+        headers,
+        responseType: "text"
+      })
+      .pipe(catchError(this.handleError));
+
+    return ret;
+  }
+
   // API: GET /container
   public getAllContainers(): Observable<Container[]> {
     return this.http
@@ -67,6 +82,7 @@ export class ApiService {
       Tag: TagHelper.resultingTag(guiDef.tag),
       Name: guiDef.base.name,
       Env: env,
+      Navcontainerhelper: guiDef.base.navcontainerhelper,
       GuiDef: JSON.stringify(guiDef)
     };
     const headers = new HttpHeaders({

@@ -37,6 +37,7 @@ export interface DeleteConfirmDialogData {
 
 export interface BaseEntryDialogData {
   base: BaseData;
+  apiNavcontainerhelperEnabled: boolean;
 }
 
 const HUB_URL = environment.hubUrl;
@@ -67,6 +68,7 @@ export class FetchDataComponent implements OnInit {
   base: BaseData;
   showAlert: boolean = false;
   alertMessage: string = "";
+  apiNavcontainerhelperEnabled: boolean = false;
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -76,6 +78,9 @@ export class FetchDataComponent implements OnInit {
     public snackBar: MatSnackBar
   ) {
     this.containers = new MatTableDataSource<Container>();
+    api.getNavcontainerhelper().subscribe(result => {
+      this.apiNavcontainerhelperEnabled = result === "true";
+    });
   }
 
   ngOnInit() {
@@ -97,7 +102,7 @@ export class FetchDataComponent implements OnInit {
 
   openImageSelectDialog(): void {
     const dialogRef = this.dialog.open(ImageSelectDialog, {
-      width: "650px",
+      width: "75%",
       data: { images: this.images }
     });
 
@@ -111,7 +116,7 @@ export class FetchDataComponent implements OnInit {
 
   openTagEntryDialog(): void {
     const dialogRef = this.dialog.open(TagEntryDialog, {
-      width: "650px",
+      width: "75%",
       data: { selectedImage: this.selectedImage }
     });
 
@@ -125,8 +130,15 @@ export class FetchDataComponent implements OnInit {
 
   openBaseEntryDialog(): void {
     const dialogRef = this.dialog.open(BaseEntryDialog, {
-      width: "650px",
-      data: { base: { name: "", acceptEula: false, useSsl: true } }
+      width: "75%",
+      data: {
+        base: {
+          name: "",
+          acceptEula: false,
+          useSsl: true
+        },
+        apiNavcontainerhelperEnabled: this.apiNavcontainerhelperEnabled
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -209,7 +221,7 @@ export class FetchDataComponent implements OnInit {
   openDeleteConfirmDialog(selectedContainer: Container, $event: any): void {
     $event.stopPropagation();
     const dialogRef = this.dialog.open(DeleteConfirmDialog, {
-      width: "650px",
+      width: "75%",
       data: { container: selectedContainer.Name }
     });
 
@@ -220,7 +232,7 @@ export class FetchDataComponent implements OnInit {
 
   openPullConfirmDialog(): void {
     const dialogRef = this.dialog.open(PullConfirmDialog, {
-      width: "650px",
+      width: "75%",
       data: { selectedImage: this.selectedImage, tag: this.tag }
     });
 

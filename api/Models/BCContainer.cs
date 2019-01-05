@@ -11,6 +11,7 @@ namespace api.Models
         public string ID { get; set; }
         public string Name { get; set; }
         public IList<string> Env { get; set; }
+        public bool Navcontainerhelper { get; set; }
         public string GuiDef { get; set; }
     }
 }

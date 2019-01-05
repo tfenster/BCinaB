@@ -5,4 +5,5 @@ export interface BaseData {
   auth: string;
   username: string;
   password: string;
+  navcontainerhelper: boolean;
 }
