@@ -12,6 +12,7 @@ import {
 } from "@angular/common/http";
 import { throwError } from "rxjs";
 import { BaseData } from "./model/baseData";
+import { RegistryCredentials } from "./model/registryCredentials";
 
 const API_URL = environment.apiUrl;
 
@@ -135,6 +136,26 @@ export class ApiService {
     });
     let ret: Observable<any> = this.http
       .post(API_URL + "/container/start?id=" + id, body, {
+        headers,
+        responseType: "text"
+      })
+      .pipe(catchError(this.handleError));
+
+    return ret;
+  }
+
+  // API: POST /image/registrycredentials
+  public saveCredentials(regCreds: RegistryCredentials): Observable<any> {
+    const body = {
+      registry: regCreds.registry,
+      username: regCreds.username,
+      password: regCreds.password
+    };
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json; charset=UTF-8"
+    });
+    let ret: Observable<any> = this.http
+      .post(API_URL + "/image/registrycredentials", body, {
         headers,
         responseType: "text"
       })

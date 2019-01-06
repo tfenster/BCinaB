@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Hubs;
+using api.Models;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.AspNetCore.SignalR;
@@ -14,11 +15,13 @@ namespace api.Hubs.Tasks
     {
         private string _fqin;
         private string _tag;
+        private RegistryCredentials _regCreds;
 
-        public PullImageTask(string fqin, string tag)
+        public PullImageTask(string fqin, string tag, RegistryCredentials regCreds)
         {
             _fqin = fqin;
             _tag = tag;
+            _regCreds = regCreds;
         }
 
         public async override Task DoStuff()
@@ -35,13 +38,23 @@ namespace api.Hubs.Tasks
                     await _signalrClients.Client(_connectionId).SendAsync("pullProgress", message);
                 }
             });
+            AuthConfig authConfig = null;
+            if (_regCreds != null)
+            {
+                authConfig = new AuthConfig()
+                {
+                    ServerAddress = _regCreds.Registry,
+                    Username = _regCreds.Username,
+                    Password = _regCreds.Password
+                };
+            }
             await GetClient().Images.CreateImageAsync(
                 new ImagesCreateParameters()
                 {
                     FromImage = _fqin,
                     Tag = _tag
                 },
-                null,
+                authConfig,
                 progress,
                 _cancellation.Token
             );

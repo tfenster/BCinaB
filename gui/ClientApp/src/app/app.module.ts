@@ -15,7 +15,8 @@ import {
   PullConfirmDialog,
   PullProgressDialog,
   DeleteConfirmDialog,
-  BaseEntryDialog
+  BaseEntryDialog,
+  RegCredDialog
 } from "./fetch-data/fetch-data.component";
 import { MaterialModule } from "./material-module";
 
@@ -35,7 +36,8 @@ import { ShowLogComponent } from "./show-log/show-log.component";
     PullProgressDialog,
     DeleteConfirmDialog,
     BaseEntryDialog,
-    ShowLogComponent
+    ShowLogComponent,
+    RegCredDialog
   ],
   entryComponents: [
     ImageSelectDialog,
@@ -43,7 +45,8 @@ import { ShowLogComponent } from "./show-log/show-log.component";
     PullConfirmDialog,
     PullProgressDialog,
     DeleteConfirmDialog,
-    BaseEntryDialog
+    BaseEntryDialog,
+    RegCredDialog
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: "ng-cli-universal" }),

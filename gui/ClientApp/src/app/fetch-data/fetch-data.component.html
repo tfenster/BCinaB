@@ -7,10 +7,17 @@
 </mat-form-field>
 
 <div style="float: right;">
-  <button mat-icon-button color="primary" (click)="openImageSelectDialog()">
-    <mat-icon>add_box_outline</mat-icon>
+  <button mat-icon-button
+    color="primary" (click)="openRegCredDialog()">
+    <mat-icon matTooltip="provide registry credentials" aria-label="provide
+      registry credentials">vpn_key</mat-icon>
   </button>
-  new container
+
+  <button mat-icon-button color="primary" (click)="openImageSelectDialog()">
+    <mat-icon matTooltip="create new container" aria-label="create new
+      container">add_box_outline</mat-icon>
+  </button>
+
 </div>
 
 <div *ngIf="showAlert"

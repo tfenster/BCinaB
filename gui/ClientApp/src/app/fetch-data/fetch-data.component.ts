@@ -17,6 +17,7 @@ import * as signalR from "@aspnet/signalr";
 import { environment } from "src/environments/environment";
 import { ProgressMessage, Progress } from "../model/progressMessage";
 import { BaseData } from "../model/baseData";
+import { RegistryCredentials } from "../model/registryCredentials";
 
 export interface ImageDialogData {
   images: Image[];
@@ -98,6 +99,24 @@ export class FetchDataComponent implements OnInit {
 
   applyFilter(filterValue: string) {
     this.containers.filter = filterValue.trim().toLowerCase();
+  }
+
+  openRegCredDialog(): void {
+    const dialogRef = this.dialog.open(RegCredDialog, {
+      width: "75%",
+      data: { images: this.images }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != undefined) {
+        this.api
+          .saveCredentials(result)
+          .subscribe(
+            () => this.snackBar.open("Credentials saved", "close"),
+            e => this.snackBar.open("Failed to save credentials: " + e, "close")
+          );
+      }
+    });
   }
 
   openImageSelectDialog(): void {
@@ -264,7 +283,8 @@ export class FetchDataComponent implements OnInit {
         connection.send(
           "pullImage",
           ImageHelper.GetFqin(this.selectedImage),
-          TagHelper.resultingTag(this.tag)
+          TagHelper.resultingTag(this.tag),
+          this.selectedImage.Registry
         );
         keepaliveInterval = setInterval(() => {
           connection.send("keepAlive", pullGuid);
@@ -277,6 +297,16 @@ export class FetchDataComponent implements OnInit {
         if (!progressIDs.includes(message.id)) {
           progressIDs.push(message.id);
           dialogRef.componentInstance.progresses.push(message);
+        }
+        if (
+          dialogRef.componentInstance === undefined ||
+          dialogRef.componentInstance === null
+        ) {
+          // probably the dialog was closed
+          this.snackBar.open("Image pull was cancelled", "Close");
+          connection.off("pullProgress");
+          connection.off("pullFinished");
+          clearInterval(keepaliveInterval);
         }
         let currProgress = dialogRef.componentInstance.progresses.find(
           p => p.id == message.id
@@ -349,6 +379,25 @@ export class ImageSelectDialog {
     public dialogRef: MatDialogRef<ImageSelectDialog>,
     @Inject(MAT_DIALOG_DATA) public data: ImageDialogData
   ) {}
+
+  onCancelClick(): void {
+    this.dialogRef.close();
+  }
+}
+
+@Component({
+  selector: "app-registry-credentials-dialog",
+  styleUrls: ["dialogs/registry-credentials.dialog.css"],
+  templateUrl: "dialogs/registry-credentials.dialog.html"
+})
+export class RegCredDialog {
+  regCreds: RegistryCredentials = {
+    password: "",
+    registry: "",
+    username: ""
+  };
+
+  constructor(public dialogRef: MatDialogRef<RegCredDialog>) {}
 
   onCancelClick(): void {
     this.dialogRef.close();

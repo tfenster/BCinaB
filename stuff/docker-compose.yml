@@ -18,6 +18,12 @@ services:
       - source: '\\.\pipe\docker_engine_windows'
         target: '\\.\pipe\docker_engine'
         type: npipe
+      - source: 'C:\Windows\System32\drivers\etc\'
+        target: 'c:\driversetc\'
+        type: bind
+      - source: 'C:\programdata\bcinab\'
+        target: 'c:\programdata\bcinab\'
+        type: bind
     networks:
       - backend
 
