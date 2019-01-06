@@ -8,6 +8,12 @@
 
 <div style="float: right;">
   <button mat-icon-button
+    color="primary" (click)="getContainers()">
+    <mat-icon matTooltip="refresh container list" aria-label="refresh container
+      list">refresh</mat-icon>
+  </button>
+
+  <button mat-icon-button
     color="primary" (click)="openRegCredDialog()">
     <mat-icon matTooltip="provide registry credentials" aria-label="provide
       registry credentials">vpn_key</mat-icon>
