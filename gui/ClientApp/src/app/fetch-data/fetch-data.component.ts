@@ -339,6 +339,7 @@ export class PullConfirmDialog {
 
 @Component({
   selector: "app-image-select-dialog",
+  styleUrls: ["dialogs/image-select.dialog.css"],
   templateUrl: "dialogs/image-select.dialog.html"
 })
 export class ImageSelectDialog {
