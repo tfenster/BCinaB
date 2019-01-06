@@ -17,6 +17,7 @@ import * as signalR from "@aspnet/signalr";
 import { environment } from "src/environments/environment";
 import { ProgressMessage, Progress } from "../model/progressMessage";
 import { BaseData } from "../model/baseData";
+import { RegistryCredentials } from "../model/registryCredentials";
 
 export interface ImageDialogData {
   images: Image[];
@@ -37,6 +38,7 @@ export interface DeleteConfirmDialogData {
 
 export interface BaseEntryDialogData {
   base: BaseData;
+  apiNavcontainerhelperEnabled: boolean;
 }
 
 const HUB_URL = environment.hubUrl;
@@ -67,6 +69,7 @@ export class FetchDataComponent implements OnInit {
   base: BaseData;
   showAlert: boolean = false;
   alertMessage: string = "";
+  apiNavcontainerhelperEnabled: boolean = false;
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -76,6 +79,9 @@ export class FetchDataComponent implements OnInit {
     public snackBar: MatSnackBar
   ) {
     this.containers = new MatTableDataSource<Container>();
+    api.getNavcontainerhelper().subscribe(result => {
+      this.apiNavcontainerhelperEnabled = result === "true";
+    });
   }
 
   ngOnInit() {
@@ -86,7 +92,7 @@ export class FetchDataComponent implements OnInit {
   getContainers() {
     this.api.getAllContainers().subscribe(containers => {
       this.containers.data = containers.map(
-        container => new Container(container)
+        container => new Container(container, this.api)
       );
     });
   }
@@ -95,9 +101,27 @@ export class FetchDataComponent implements OnInit {
     this.containers.filter = filterValue.trim().toLowerCase();
   }
 
+  openRegCredDialog(): void {
+    const dialogRef = this.dialog.open(RegCredDialog, {
+      width: "75%",
+      data: { images: this.images }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != undefined) {
+        this.api
+          .saveCredentials(result)
+          .subscribe(
+            () => this.snackBar.open("Credentials saved", "close"),
+            e => this.snackBar.open("Failed to save credentials: " + e, "close")
+          );
+      }
+    });
+  }
+
   openImageSelectDialog(): void {
     const dialogRef = this.dialog.open(ImageSelectDialog, {
-      width: "650px",
+      width: "75%",
       data: { images: this.images }
     });
 
@@ -111,7 +135,7 @@ export class FetchDataComponent implements OnInit {
 
   openTagEntryDialog(): void {
     const dialogRef = this.dialog.open(TagEntryDialog, {
-      width: "650px",
+      width: "75%",
       data: { selectedImage: this.selectedImage }
     });
 
@@ -125,8 +149,15 @@ export class FetchDataComponent implements OnInit {
 
   openBaseEntryDialog(): void {
     const dialogRef = this.dialog.open(BaseEntryDialog, {
-      width: "650px",
-      data: { base: { name: "", acceptEula: false, useSsl: true } }
+      width: "75%",
+      data: {
+        base: {
+          name: "",
+          acceptEula: false,
+          useSsl: true
+        },
+        apiNavcontainerhelperEnabled: this.apiNavcontainerhelperEnabled
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -209,7 +240,7 @@ export class FetchDataComponent implements OnInit {
   openDeleteConfirmDialog(selectedContainer: Container, $event: any): void {
     $event.stopPropagation();
     const dialogRef = this.dialog.open(DeleteConfirmDialog, {
-      width: "650px",
+      width: "75%",
       data: { container: selectedContainer.Name }
     });
 
@@ -220,7 +251,7 @@ export class FetchDataComponent implements OnInit {
 
   openPullConfirmDialog(): void {
     const dialogRef = this.dialog.open(PullConfirmDialog, {
-      width: "650px",
+      width: "75%",
       data: { selectedImage: this.selectedImage, tag: this.tag }
     });
 
@@ -252,7 +283,8 @@ export class FetchDataComponent implements OnInit {
         connection.send(
           "pullImage",
           ImageHelper.GetFqin(this.selectedImage),
-          TagHelper.resultingTag(this.tag)
+          TagHelper.resultingTag(this.tag),
+          this.selectedImage.Registry
         );
         keepaliveInterval = setInterval(() => {
           connection.send("keepAlive", pullGuid);
@@ -265,6 +297,16 @@ export class FetchDataComponent implements OnInit {
         if (!progressIDs.includes(message.id)) {
           progressIDs.push(message.id);
           dialogRef.componentInstance.progresses.push(message);
+        }
+        if (
+          dialogRef.componentInstance === undefined ||
+          dialogRef.componentInstance === null
+        ) {
+          // probably the dialog was closed
+          this.snackBar.open("Image pull was cancelled", "Close");
+          connection.off("pullProgress");
+          connection.off("pullFinished");
+          clearInterval(keepaliveInterval);
         }
         let currProgress = dialogRef.componentInstance.progresses.find(
           p => p.id == message.id
@@ -327,6 +369,7 @@ export class PullConfirmDialog {
 
 @Component({
   selector: "app-image-select-dialog",
+  styleUrls: ["dialogs/image-select.dialog.css"],
   templateUrl: "dialogs/image-select.dialog.html"
 })
 export class ImageSelectDialog {
@@ -336,6 +379,25 @@ export class ImageSelectDialog {
     public dialogRef: MatDialogRef<ImageSelectDialog>,
     @Inject(MAT_DIALOG_DATA) public data: ImageDialogData
   ) {}
+
+  onCancelClick(): void {
+    this.dialogRef.close();
+  }
+}
+
+@Component({
+  selector: "app-registry-credentials-dialog",
+  styleUrls: ["dialogs/registry-credentials.dialog.css"],
+  templateUrl: "dialogs/registry-credentials.dialog.html"
+})
+export class RegCredDialog {
+  regCreds: RegistryCredentials = {
+    password: "",
+    registry: "",
+    username: ""
+  };
+
+  constructor(public dialogRef: MatDialogRef<RegCredDialog>) {}
 
   onCancelClick(): void {
     this.dialogRef.close();

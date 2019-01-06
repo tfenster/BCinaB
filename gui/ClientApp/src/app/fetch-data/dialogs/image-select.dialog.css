@@ -1,0 +1,4 @@
+.mat-radio-group {
+  flex-direction: column;
+  display: flex;
+}

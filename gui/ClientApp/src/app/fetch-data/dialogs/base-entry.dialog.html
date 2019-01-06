@@ -4,12 +4,23 @@
     What base data do you want to use for the container?
   </p>
   <div class="flexcolumn">
-    <mat-form-field>
+    <mat-checkbox *ngIf="data.apiNavcontainerhelperEnabled" cdkFocusInitial
+      [(ngModel)]="data.base.navcontainerhelper">Create volumes for
+      navcontainerhelper</mat-checkbox>
+
+    <mat-form-field *ngIf="!data.base.navcontainerhelper">
       <input
         matInput
         [(ngModel)]="data.base.name"
-        placeholder="Container name (hostname will be the same)"
-        cdkFocusInitial
+        placeholder="Container name non req (hostname will be the same)"
+        />
+    </mat-form-field>
+    <mat-form-field *ngIf="data.base.navcontainerhelper">
+      <input
+        matInput
+        [(ngModel)]="data.base.name"
+        placeholder="Container name req (hostname will be the same)"
+        required
         />
     </mat-form-field>
 

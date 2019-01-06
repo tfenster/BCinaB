@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { environment } from "../environments/environment";
 import { Observable } from "rxjs/Observable";
 import { catchError } from "rxjs/operators";
-import { Container } from "./model/container";
+import { Container, ContainerInspect } from "./model/container";
 import { Image } from "./model/image";
 import { Tag, TagHelper } from "./model/tag";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@angular/common/http";
 import { throwError } from "rxjs";
 import { BaseData } from "./model/baseData";
+import { RegistryCredentials } from "./model/registryCredentials";
 
 const API_URL = environment.apiUrl;
 
@@ -25,10 +26,32 @@ export interface GuiDef {
 export class ApiService {
   constructor(private http: HttpClient) {}
 
+  // API: GET /system/navcontainerhepler
+  public getNavcontainerhelper(): Observable<string> {
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json; charset=UTF-8"
+    });
+    let ret: Observable<string> = this.http
+      .get(API_URL + "/system/navcontainerhelper", {
+        headers,
+        responseType: "text"
+      })
+      .pipe(catchError(this.handleError));
+
+    return ret;
+  }
+
   // API: GET /container
   public getAllContainers(): Observable<Container[]> {
     return this.http
       .get<Container[]>(API_URL + "/container")
+      .pipe(catchError(this.handleError));
+  }
+
+  // API: GET /container/Details
+  public getContainerInspect(id: string): Observable<ContainerInspect> {
+    return this.http
+      .get<ContainerInspect>(API_URL + "/container/details?id=" + id)
       .pipe(catchError(this.handleError));
   }
 
@@ -60,6 +83,7 @@ export class ApiService {
       Tag: TagHelper.resultingTag(guiDef.tag),
       Name: guiDef.base.name,
       Env: env,
+      Navcontainerhelper: guiDef.base.navcontainerhelper,
       GuiDef: JSON.stringify(guiDef)
     };
     const headers = new HttpHeaders({
@@ -112,6 +136,26 @@ export class ApiService {
     });
     let ret: Observable<any> = this.http
       .post(API_URL + "/container/start?id=" + id, body, {
+        headers,
+        responseType: "text"
+      })
+      .pipe(catchError(this.handleError));
+
+    return ret;
+  }
+
+  // API: POST /image/registrycredentials
+  public saveCredentials(regCreds: RegistryCredentials): Observable<any> {
+    const body = {
+      registry: regCreds.registry,
+      username: regCreds.username,
+      password: regCreds.password
+    };
+    const headers = new HttpHeaders({
+      "Content-Type": "application/json; charset=UTF-8"
+    });
+    let ret: Observable<any> = this.http
+      .post(API_URL + "/image/registrycredentials", body, {
         headers,
         responseType: "text"
       })

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 
-namespace api.Tasks
+namespace api.Hubs.Tasks
 {
 
     public class ShowLogTask : BackgroundTask

@@ -38,6 +38,13 @@ namespace api.Controllers
             return Ok(containers);
         }
 
+        [HttpGet("[action]/")]
+        public async Task<ActionResult<ContainerInspectResponse>> Details(string id)
+        {
+            var container = await GetClient().Containers.InspectContainerAsync(id);
+            return Ok(container);
+        }
+
         [HttpPost("[action]/")]
         public async Task<ActionResult> Start(string id)
         {
@@ -147,6 +154,23 @@ namespace api.Controllers
                 if (sysInfo.Isolation == "hyperv")
                 {
                     hostConf.Memory = 4294967296; // 4G
+                }
+
+                if (container.Navcontainerhelper)
+                {
+                    var basePath = "c:\\programdata\\navcontainerhelper";
+                    var specificPart = "\\extensions\\" + container.Name + "\\my";
+                    var myPath = basePath + specificPart;
+
+                    if (Directory.Exists(basePath))  // this should be bound as volume
+                    {
+                        if (!Directory.Exists(myPath))
+                            Directory.CreateDirectory(myPath);
+                    }
+
+                    hostConf.Binds = new List<string>();
+                    hostConf.Binds.Add($"{myPath}:c:\\run\\my");
+                    hostConf.Binds.Add($"{basePath}:{basePath}");
                 }
 
                 var Labels = new Dictionary<string, string>();

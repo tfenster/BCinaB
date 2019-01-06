@@ -1,5 +1,6 @@
 import { Port } from "./port";
-import { GuiDef } from "../api.service";
+import { GuiDef, ApiService } from "../api.service";
+import "rxjs/add/operator/take";
 
 export class Container {
   Id: string;
@@ -18,8 +19,9 @@ export class Container {
   DisplayLabels: string[] = [];
   IPs: string[] = [];
   GuiDef: GuiDef;
+  Hostname: string;
 
-  constructor(values: Object = {}) {
+  constructor(values: Object = {}, private api: ApiService) {
     Object.assign(this, values);
     this.Name = this.Names[0].substring(1);
     this.ShortId = this.Id.substring(0, 10);
@@ -50,6 +52,16 @@ export class Container {
 
     if (this.Labels.hasOwnProperty("bcinab.guidef")) {
       this.GuiDef = JSON.parse(this.Labels["bcinab.guidef"]);
+      if (this.GuiDef.base.name != "") this.Hostname = this.GuiDef.base.name;
+    }
+
+    if (this.Hostname === undefined) {
+      api
+        .getContainerInspect(this.Id)
+        .toPromise()
+        .then(containerInspect => {
+          this.Hostname = containerInspect.Config.Hostname;
+        });
     }
 
     let networks = values["NetworkSettings"]["Networks"];
@@ -61,7 +73,18 @@ export class Container {
   webclientURL(): string {
     let url = "https://";
     if (!this.GuiDef.base.useSsl) url = "http://";
-    url += this.IPs[0] + "/NAV";
+    url += this.Hostname + "/NAV";
     return url;
   }
+}
+
+export class ContainerInspect {
+  Config: ContainerInspectConfig;
+  constructor(values: Object = {}) {
+    Object.assign(this, values);
+  }
+}
+
+export class ContainerInspectConfig {
+  Hostname: string;
 }
