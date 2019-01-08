@@ -2,12 +2,46 @@ function Start-BCinaB {
     param
     (
         [switch]
-        $DockerEnterpriseEdition,
+        $Debug,
         [switch]
-        $NavContainerHelper,
-        [switch]
-        $Debug
+        $WhatIf
     )
+    
+    $pre_ErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "SilentlyContinue"
+
+    $pipe_windows = $true
+    try {
+        $ps = (docker -H npipe:////./pipe/docker_engine_windows ps) | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            $pipe_windows = $false
+        }
+    } catch{
+        $pipe_windows = $false
+    }
+
+    if (-not $pipe_windows) {
+        $pipe_non_windows = $true
+        try {
+            $ps = (docker -H npipe:////./pipe/docker_engine ps) | Out-Null
+            if ($LASTEXITCODE -ne 0) {
+                $pipe_non_windows = $false
+            }
+        } catch{
+            $pipe_non_windows = $false
+        }
+    }
+    
+    if (-not $pipe_windows -and -not $pipe_non_windows) {
+        Write-Host "Unable to reach the Docker engine. Are your sure Docker is running and reachable?"
+        return
+    }
+    
+    if ($pipe_non_windows) {
+        $DockerEnterpriseEdition = $true
+    }
+
+    $ErrorActionPreference = $pre_ErrorActionPreference
 
     if (-not (Test-Path -Path "c:\programdata\bcinab" -PathType Container)) {
         Write-Host "I will create folder c:\programdata\bcinab and store data there. Please leave that folder in place while you use BCinaB."
@@ -19,20 +53,17 @@ function Start-BCinaB {
     if ($DockerEnterpriseEdition) {
         $command = $command + " -f c:\programdata\bcinab\docker-compose.ee.yml"
     }
-    if ($NavContainerHelper) {
-        if (-not (Test-Path -Path "c:\programdata\navcontainerhelper" -PathType Container)) {
-            Write-Host "Doesn't seem like NavContainerHelper is installed: I am looking for c:\programdata\navcontainerhelper and can't find it."
-            return
-        }
-        else {
-            $command = $command + " -f c:\programdata\bcinab\docker-compose.navcontainerhelper.yml"
-        }
+    if (Test-Path -Path "c:\programdata\navcontainerhelper" -PathType Container) {
+        $command = $command + " -f c:\programdata\bcinab\docker-compose.navcontainerhelper.yml"
     }
+    
     $command = $command + " up"
-    if ($Debug) {
-        Write-Host "running: <$command>"
+    if ($Debug -or $Whatif) {
+        Write-Host "command: $command"
     }
-    invoke-expression $command
+    if (-not $Whatif) {
+        invoke-expression $command
+    }
 }
 
 function Update-BCinaB {
