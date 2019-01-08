@@ -67,7 +67,9 @@ function Start-BCinaB {
 }
 
 function Update-BCinaB {
+    Stop-BCinaB
     DownloadCurrentCompose
+    Start-BCinaB
 }
 
 function Stop-BCinaB {
