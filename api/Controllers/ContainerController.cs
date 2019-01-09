@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using api.Models;
@@ -78,6 +79,74 @@ namespace api.Controllers
                     return Ok(id);
                 else
                     return BadRequest($"could not stop {id}");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"An error occured: {ex.Message}");
+            }
+        }
+
+        [HttpPost("[action]/")]
+        public async Task<ActionResult> Exec(string id)
+        {
+            try
+            {
+                /* var resp = await GetClient().Containers.ExecCreateContainerAsync(id,
+                        new ContainerExecCreateParameters()
+                        {
+                            AttachStderr = true,
+                            AttachStdin = true,
+                            AttachStdout = true,
+                            Tty = true,
+                            Cmd = new List<string>() { "powershell" }
+                        }
+                    );
+
+                var multiplexedStreams = await GetClient().Containers.StartAndAttachContainerExecAsync(resp.ID, true);
+
+                multiplexedStreams.CopyOutputToAsync()*/
+
+                try
+                {
+                    var resp = await GetClient().Containers.ExecCreateContainerAsync(id,
+                        new ContainerExecCreateParameters()
+                        {
+                            AttachStderr = true,
+                            AttachStdin = true,
+                            AttachStdout = true,
+                            Tty = true,
+                            Cmd = new List<string>() { "powershell" }
+                        }
+                    );
+
+                    var multiplexedStreams = await GetClient().Containers.StartAndAttachContainerExecAsync(resp.ID, true);
+                    using (MemoryStream stdOut = new MemoryStream(), stdErr = new MemoryStream(), stdIn = new MemoryStream())
+                    {
+                        var streamTask = multiplexedStreams.CopyOutputToAsync(stdIn, stdOut, stdErr, CancellationToken.None);
+
+
+                        stdOut.Position = 0;
+                        stdErr.Position = 0;
+
+                        using (StreamReader outRdr = new StreamReader(stdOut), errRdr = new StreamReader(stdErr))
+                        using (StreamWriter inWrt = new StreamWriter(stdIn))
+                        {
+                            //stdIn
+                            await streamTask;
+                            inWrt.WriteLine("powershell");
+                            var stdOutString = outRdr.ReadLine();
+                            var stdErrString = errRdr.ReadLine();
+                            Console.WriteLine("stdout: " + stdOutString);
+                            Console.WriteLine("stderr: " + stdErrString);
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Console.Write(exception.Message);
+                }
+
+                return Ok(id);
             }
             catch (Exception ex)
             {

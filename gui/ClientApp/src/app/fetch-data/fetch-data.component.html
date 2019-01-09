@@ -75,11 +75,11 @@
         </a>
         <button mat-icon-button color="primary" *ngIf="row.State === 'exited'"
           (click)="startContainer(row.Id, $event)" matTooltip="start">
-          <mat-icon>play_circle_outline</mat-icon>
+          <mat-icon>play_arrow</mat-icon>
         </button>
         <button mat-icon-button color="primary" *ngIf="row.State === 'running'"
           (click)="stopContainer(row.Id, $event)" matTooltip="stop">
-          <mat-icon>pause_circle_outline</mat-icon>
+          <mat-icon>stop</mat-icon>
         </button>
         <button mat-icon-button color="primary" *ngIf="row.State === 'running'"
           (click)="restartContainer(row.Id, $event)" matTooltip="restart">
