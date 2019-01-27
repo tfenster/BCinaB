@@ -191,9 +191,17 @@ namespace api.Controllers
                     new ContainerStartParameters() { }
                 );
                 if (started)
+                {
+                    if (container.TestToolkit)
+                    {
+
+                    }
                     return Ok(createResp.ID);
+                }
                 else
+                {
                     return BadRequest($"could not start {createResp.ID}");
+                }
             }
             catch (Exception ex)
             {

@@ -13,6 +13,8 @@ import {
 import { throwError } from "rxjs";
 import { BaseData } from "./model/baseData";
 import { RegistryCredentials } from "./model/registryCredentials";
+import { AdvancedData } from "./model/advancedData";
+import { Network } from "./model/network";
 
 const API_URL = environment.apiUrl;
 
@@ -20,13 +22,14 @@ export interface GuiDef {
   image: Image;
   tag: Tag;
   base: BaseData;
+  adv: AdvancedData;
 }
 
 @Injectable()
 export class ApiService {
   constructor(private http: HttpClient) {}
 
-  // API: GET /system/navcontainerhepler
+  // API: GET /system/navcontainerhelper
   public getNavcontainerhelper(): Observable<string> {
     const headers = new HttpHeaders({
       "Content-Type": "application/json; charset=UTF-8"
@@ -39,6 +42,13 @@ export class ApiService {
       .pipe(catchError(this.handleError));
 
     return ret;
+  }
+
+  // API: GET /system/networks
+  public getNetworks(): Observable<Network[]> {
+    return this.http
+      .get<Network[]>(API_URL + "/system/networks")
+      .pipe(catchError(this.handleError));
   }
 
   // API: GET /container
@@ -84,6 +94,8 @@ export class ApiService {
       Name: guiDef.base.name,
       Env: env,
       Navcontainerhelper: guiDef.base.navcontainerhelper,
+      TestToolkit: guiDef.adv.testToolkit,
+      Network: guiDef.adv.network,
       GuiDef: JSON.stringify(guiDef)
     };
     const headers = new HttpHeaders({

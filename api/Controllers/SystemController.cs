@@ -43,6 +43,22 @@ namespace api.Controllers
             return Ok(Directory.Exists("C:\\programdata\\navcontainerhelper"));
         }
 
+        // GET api/system
+        [HttpGet("[action]/")]
+        public async Task<ActionResult<IList<NetworkResponse>>> Networks()
+        {
+            try
+            {
+                var resp = await GetClient().Networks.ListNetworksAsync();
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         private DockerClient GetClient()
         {
             if (_client == null)
