@@ -12,14 +12,14 @@
       <input
         matInput
         [(ngModel)]="data.base.name"
-        placeholder="Container name non req (hostname will be the same)"
+        placeholder="Container name (hostname will be the same)"
         />
     </mat-form-field>
     <mat-form-field *ngIf="data.base.navcontainerhelper">
       <input
         matInput
         [(ngModel)]="data.base.name"
-        placeholder="Container name req (hostname will be the same)"
+        placeholder="Container name (hostname will be the same)"
         required
         />
     </mat-form-field>
