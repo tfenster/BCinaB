@@ -65,6 +65,13 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
+  // API: GET /container/credentialspecs
+  public getCredspecs(): Observable<string[]> {
+    return this.http
+      .get<string[]>(API_URL + "/container/credentialspecs")
+      .pipe(catchError(this.handleError));
+  }
+
   // API: POST /container
   public createContainer(guiDef: GuiDef): Observable<any> {
     let env: string[] = [];
@@ -96,6 +103,7 @@ export class ApiService {
       Navcontainerhelper: guiDef.base.navcontainerhelper,
       TestToolkit: guiDef.adv.testToolkit,
       Network: guiDef.adv.network,
+      SecurityOpt: "credentialspec=file://" + guiDef.adv.credspec,
       GuiDef: JSON.stringify(guiDef)
     };
     const headers = new HttpHeaders({

@@ -173,6 +173,13 @@ namespace api.Controllers
                     hostConf.Binds.Add($"{basePath}:{basePath}");
                 }
 
+                if (!string.IsNullOrEmpty(container.SecurityOpt))
+                {
+                    IList<string> securityOpts = new List<string>();
+                    securityOpts.Add(container.SecurityOpt);
+                    hostConf.SecurityOpt = securityOpts;
+                }
+
                 var Labels = new Dictionary<string, string>();
                 Labels.Add("bcinab.guidef", $"{container.GuiDef}");
 

@@ -46,6 +46,7 @@ export interface BaseEntryDialogData {
 export interface AdvEntryDialogData {
   adv: AdvancedData;
   networks: Network[];
+  credspecs: string[];
 }
 
 const HUB_URL = environment.hubUrl;
@@ -177,22 +178,25 @@ export class FetchDataComponent implements OnInit {
   }
 
   openAdvEntryDialog(): void {
-    this.api.getNetworks().subscribe(result => {
-      const dialogRef = this.dialog.open(AdvEntryDialog, {
-        width: "75%",
-        data: {
-          adv: {
-            testToolkit: false
-          },
-          networks: result
-        }
-      });
+    this.api.getNetworks().subscribe(networks => {
+      this.api.getCredspecs().subscribe(credspecs => {
+        const dialogRef = this.dialog.open(AdvEntryDialog, {
+          width: "75%",
+          data: {
+            adv: {
+              testToolkit: false
+            },
+            networks: networks,
+            credspecs: credspecs
+          }
+        });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result != undefined) {
-          this.adv = result;
-          this.createContainer();
-        }
+        dialogRef.afterClosed().subscribe(result => {
+          if (result != undefined) {
+            this.adv = result;
+            this.createContainer();
+          }
+        });
       });
     });
   }

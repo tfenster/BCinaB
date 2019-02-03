@@ -59,6 +59,27 @@ namespace api.Controllers
 
         }
 
+        // GET api/system
+        [HttpGet("[action]/")]
+        public ActionResult<IList<string>> CredentialSpecs()
+        {
+            try
+            {
+                var resp = new List<string>();
+                string[] files = Directory.GetFiles(@"c:\programdata\dockercredspecs\", "*.json");
+                foreach (var file in files)
+                {
+                    resp.Add(file.Substring(file.LastIndexOf(@"\") + 1));
+                }
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         private DockerClient GetClient()
         {
             if (_client == null)

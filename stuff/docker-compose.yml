@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   gui:
-    image: arssolvendi.azurecr.io/bcinab-gui:alpha6
+    image: testme
     depends_on:
       - api
     links:
@@ -23,6 +23,9 @@ services:
         type: bind
       - source: 'C:\programdata\bcinab\'
         target: 'c:\programdata\bcinab\'
+        type: bind
+      - source: 'C:\ProgramData\docker\credentialspecs\'
+        target: 'c:\programdata\dockercredspecs\'
         type: bind
     networks:
       - backend
