@@ -61,6 +61,27 @@ namespace api.Controllers
 
         // GET api/system
         [HttpGet("[action]/")]
+        public ActionResult<IList<string>> Licenses()
+        {
+            try
+            {
+                var resp = new List<string>();
+                string[] files = Directory.GetFiles(@"c:\programdata\bcinab\licenses\", "*.flf");
+                foreach (var file in files)
+                {
+                    resp.Add(file.Substring(file.LastIndexOf(@"\") + 1));
+                }
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        // GET api/system
+        [HttpGet("[action]/")]
         public ActionResult<IList<string>> CredentialSpecs()
         {
             try

@@ -14,6 +14,7 @@ namespace api.Models
         public bool Navcontainerhelper { get; set; }
         public string Network { get; set; }
         public string SecurityOpt { get; set; }
+        public string License { get; set; }
         public bool TestToolkit { get; set; }
         public string GuiDef { get; set; }
     }

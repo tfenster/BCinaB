@@ -47,6 +47,7 @@ export interface AdvEntryDialogData {
   adv: AdvancedData;
   networks: Network[];
   credspecs: string[];
+  licenses: string[];
 }
 
 const HUB_URL = environment.hubUrl;
@@ -180,22 +181,25 @@ export class FetchDataComponent implements OnInit {
   openAdvEntryDialog(): void {
     this.api.getNetworks().subscribe(networks => {
       this.api.getCredspecs().subscribe(credspecs => {
-        const dialogRef = this.dialog.open(AdvEntryDialog, {
-          width: "75%",
-          data: {
-            adv: {
-              testToolkit: false
-            },
-            networks: networks,
-            credspecs: credspecs
-          }
-        });
+        this.api.getLicenses().subscribe(licenses => {
+          const dialogRef = this.dialog.open(AdvEntryDialog, {
+            width: "75%",
+            data: {
+              adv: {
+                testToolkit: false
+              },
+              networks: networks,
+              credspecs: credspecs,
+              licenses: licenses
+            }
+          });
 
-        dialogRef.afterClosed().subscribe(result => {
-          if (result != undefined) {
-            this.adv = result;
-            this.createContainer();
-          }
+          dialogRef.afterClosed().subscribe(result => {
+            if (result != undefined) {
+              this.adv = result;
+              this.createContainer();
+            }
+          });
         });
       });
     });

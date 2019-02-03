@@ -180,6 +180,14 @@ namespace api.Controllers
                     hostConf.SecurityOpt = securityOpts;
                 }
 
+                if (!string.IsNullOrEmpty(container.License))
+                {
+                    if (hostConf.Binds == null)
+                        hostConf.Binds = new List<string>();
+                    hostConf.Binds.Add(@"c:\programdata\bcinab\licenses:c:\licenses");
+                    Env.Add(@"licensefile=c:\licenses\" + container.License);
+                }
+
                 var Labels = new Dictionary<string, string>();
                 Labels.Add("bcinab.guidef", $"{container.GuiDef}");
 

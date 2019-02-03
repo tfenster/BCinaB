@@ -68,7 +68,14 @@ export class ApiService {
   // API: GET /container/credentialspecs
   public getCredspecs(): Observable<string[]> {
     return this.http
-      .get<string[]>(API_URL + "/container/credentialspecs")
+      .get<string[]>(API_URL + "/system/credentialspecs")
+      .pipe(catchError(this.handleError));
+  }
+
+  // API: GET /container/licenses
+  public getLicenses(): Observable<string[]> {
+    return this.http
+      .get<string[]>(API_URL + "/system/licenses")
       .pipe(catchError(this.handleError));
   }
 
@@ -103,6 +110,7 @@ export class ApiService {
       Navcontainerhelper: guiDef.base.navcontainerhelper,
       TestToolkit: guiDef.adv.testToolkit,
       Network: guiDef.adv.network,
+      License: guiDef.adv.license,
       SecurityOpt: "credentialspec=file://" + guiDef.adv.credspec,
       GuiDef: JSON.stringify(guiDef)
     };

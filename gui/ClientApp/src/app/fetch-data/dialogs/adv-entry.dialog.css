@@ -10,3 +10,8 @@ p {
 .mat-form-field {
   padding-top: 1em;
 }
+
+.mat-radio-group {
+  flex-direction: column;
+  display: flex;
+}
