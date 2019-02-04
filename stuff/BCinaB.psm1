@@ -48,6 +48,10 @@ function Start-BCinaB {
         New-Item -Path "c:\programdata\bcinab" -ItemType Directory
         DownloadCurrentCompose
     }
+    
+    if (-not (Test-Path -Path "c:\programdata\bcinab\licenses" -PathType Container)) {
+        New-Item -Path "c:\programdata\bcinab\licenses" -ItemType Directory
+    }
 
     $command = "docker-compose -p bcinab -f c:\programdata\bcinab\docker-compose.yml";
     if ($DockerEnterpriseEdition) {
