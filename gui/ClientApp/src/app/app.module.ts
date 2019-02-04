@@ -16,7 +16,8 @@ import {
   PullProgressDialog,
   DeleteConfirmDialog,
   BaseEntryDialog,
-  RegCredDialog
+  RegCredDialog,
+  AdvEntryDialog
 } from "./fetch-data/fetch-data.component";
 import { MaterialModule } from "./material-module";
 
@@ -36,6 +37,7 @@ import { ShowLogComponent } from "./show-log/show-log.component";
     PullProgressDialog,
     DeleteConfirmDialog,
     BaseEntryDialog,
+    AdvEntryDialog,
     ShowLogComponent,
     RegCredDialog
   ],
@@ -46,6 +48,7 @@ import { ShowLogComponent } from "./show-log/show-log.component";
     PullProgressDialog,
     DeleteConfirmDialog,
     BaseEntryDialog,
+    AdvEntryDialog,
     RegCredDialog
   ],
   imports: [

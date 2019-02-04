@@ -18,6 +18,8 @@ import { environment } from "src/environments/environment";
 import { ProgressMessage, Progress } from "../model/progressMessage";
 import { BaseData } from "../model/baseData";
 import { RegistryCredentials } from "../model/registryCredentials";
+import { AdvancedData } from "../model/advancedData";
+import { Network } from "../model/network";
 
 export interface ImageDialogData {
   images: Image[];
@@ -39,6 +41,13 @@ export interface DeleteConfirmDialogData {
 export interface BaseEntryDialogData {
   base: BaseData;
   apiNavcontainerhelperEnabled: boolean;
+}
+
+export interface AdvEntryDialogData {
+  adv: AdvancedData;
+  networks: Network[];
+  credspecs: string[];
+  licenses: string[];
 }
 
 const HUB_URL = environment.hubUrl;
@@ -67,6 +76,7 @@ export class FetchDataComponent implements OnInit {
   images: Image[] = ImageHelper.GetAll();
   tag: Tag;
   base: BaseData;
+  adv: AdvancedData;
   showAlert: boolean = false;
   alertMessage: string = "";
   apiNavcontainerhelperEnabled: boolean = false;
@@ -163,8 +173,35 @@ export class FetchDataComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result != undefined) {
         this.base = result;
-        this.createContainer();
+        this.openAdvEntryDialog();
       }
+    });
+  }
+
+  openAdvEntryDialog(): void {
+    this.api.getNetworks().subscribe(networks => {
+      this.api.getCredspecs().subscribe(credspecs => {
+        this.api.getLicenses().subscribe(licenses => {
+          const dialogRef = this.dialog.open(AdvEntryDialog, {
+            width: "75%",
+            data: {
+              adv: {
+                testToolkit: false
+              },
+              networks: networks,
+              credspecs: credspecs,
+              licenses: licenses
+            }
+          });
+
+          dialogRef.afterClosed().subscribe(result => {
+            if (result != undefined) {
+              this.adv = result;
+              this.createContainer();
+            }
+          });
+        });
+      });
     });
   }
 
@@ -172,7 +209,8 @@ export class FetchDataComponent implements OnInit {
     let guiDef: GuiDef = {
       image: this.selectedImage,
       tag: this.tag,
-      base: this.base
+      base: this.base,
+      adv: this.adv
     };
     this.api.createContainer(guiDef).subscribe(
       response => {
@@ -441,6 +479,22 @@ export class BaseEntryDialog {
   constructor(
     public dialogRef: MatDialogRef<BaseEntryDialog>,
     @Inject(MAT_DIALOG_DATA) public data: BaseEntryDialogData
+  ) {}
+
+  onCancelClick(): void {
+    this.dialogRef.close();
+  }
+}
+
+@Component({
+  selector: "adv-entry-dialog",
+  styleUrls: ["dialogs/adv-entry.dialog.css"],
+  templateUrl: "dialogs/adv-entry.dialog.html"
+})
+export class AdvEntryDialog {
+  constructor(
+    public dialogRef: MatDialogRef<AdvEntryDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: AdvEntryDialogData
   ) {}
 
   onCancelClick(): void {

@@ -173,6 +173,21 @@ namespace api.Controllers
                     hostConf.Binds.Add($"{basePath}:{basePath}");
                 }
 
+                if (!string.IsNullOrEmpty(container.SecurityOpt))
+                {
+                    IList<string> securityOpts = new List<string>();
+                    securityOpts.Add(container.SecurityOpt);
+                    hostConf.SecurityOpt = securityOpts;
+                }
+
+                if (!string.IsNullOrEmpty(container.License))
+                {
+                    if (hostConf.Binds == null)
+                        hostConf.Binds = new List<string>();
+                    hostConf.Binds.Add(@"c:\programdata\bcinab\licenses:c:\licenses");
+                    Env.Add(@"licensefile=c:\licenses\" + container.License);
+                }
+
                 var Labels = new Dictionary<string, string>();
                 Labels.Add("bcinab.guidef", $"{container.GuiDef}");
 
@@ -191,9 +206,17 @@ namespace api.Controllers
                     new ContainerStartParameters() { }
                 );
                 if (started)
+                {
+                    if (container.TestToolkit)
+                    {
+
+                    }
                     return Ok(createResp.ID);
+                }
                 else
+                {
                     return BadRequest($"could not start {createResp.ID}");
+                }
             }
             catch (Exception ex)
             {

@@ -13,6 +13,8 @@ import {
 import { throwError } from "rxjs";
 import { BaseData } from "./model/baseData";
 import { RegistryCredentials } from "./model/registryCredentials";
+import { AdvancedData } from "./model/advancedData";
+import { Network } from "./model/network";
 
 const API_URL = environment.apiUrl;
 
@@ -20,13 +22,14 @@ export interface GuiDef {
   image: Image;
   tag: Tag;
   base: BaseData;
+  adv: AdvancedData;
 }
 
 @Injectable()
 export class ApiService {
   constructor(private http: HttpClient) {}
 
-  // API: GET /system/navcontainerhepler
+  // API: GET /system/navcontainerhelper
   public getNavcontainerhelper(): Observable<string> {
     const headers = new HttpHeaders({
       "Content-Type": "application/json; charset=UTF-8"
@@ -41,6 +44,13 @@ export class ApiService {
     return ret;
   }
 
+  // API: GET /system/networks
+  public getNetworks(): Observable<Network[]> {
+    return this.http
+      .get<Network[]>(API_URL + "/system/networks")
+      .pipe(catchError(this.handleError));
+  }
+
   // API: GET /container
   public getAllContainers(): Observable<Container[]> {
     return this.http
@@ -52,6 +62,20 @@ export class ApiService {
   public getContainerInspect(id: string): Observable<ContainerInspect> {
     return this.http
       .get<ContainerInspect>(API_URL + "/container/details?id=" + id)
+      .pipe(catchError(this.handleError));
+  }
+
+  // API: GET /container/credentialspecs
+  public getCredspecs(): Observable<string[]> {
+    return this.http
+      .get<string[]>(API_URL + "/system/credentialspecs")
+      .pipe(catchError(this.handleError));
+  }
+
+  // API: GET /container/licenses
+  public getLicenses(): Observable<string[]> {
+    return this.http
+      .get<string[]>(API_URL + "/system/licenses")
       .pipe(catchError(this.handleError));
   }
 
@@ -84,6 +108,10 @@ export class ApiService {
       Name: guiDef.base.name,
       Env: env,
       Navcontainerhelper: guiDef.base.navcontainerhelper,
+      TestToolkit: guiDef.adv.testToolkit,
+      Network: guiDef.adv.network,
+      License: guiDef.adv.license,
+      SecurityOpt: "credentialspec=file://" + guiDef.adv.credspec,
       GuiDef: JSON.stringify(guiDef)
     };
     const headers = new HttpHeaders({

@@ -43,6 +43,64 @@ namespace api.Controllers
             return Ok(Directory.Exists("C:\\programdata\\navcontainerhelper"));
         }
 
+        // GET api/system
+        [HttpGet("[action]/")]
+        public async Task<ActionResult<IList<NetworkResponse>>> Networks()
+        {
+            try
+            {
+                var resp = await GetClient().Networks.ListNetworksAsync();
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        // GET api/system
+        [HttpGet("[action]/")]
+        public ActionResult<IList<string>> Licenses()
+        {
+            try
+            {
+                var resp = new List<string>();
+                string[] files = Directory.GetFiles(@"c:\programdata\bcinab\licenses\", "*.flf");
+                foreach (var file in files)
+                {
+                    resp.Add(file.Substring(file.LastIndexOf(@"\") + 1));
+                }
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        // GET api/system
+        [HttpGet("[action]/")]
+        public ActionResult<IList<string>> CredentialSpecs()
+        {
+            try
+            {
+                var resp = new List<string>();
+                string[] files = Directory.GetFiles(@"c:\programdata\dockercredspecs\", "*.json");
+                foreach (var file in files)
+                {
+                    resp.Add(file.Substring(file.LastIndexOf(@"\") + 1));
+                }
+                return Ok(resp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         private DockerClient GetClient()
         {
             if (_client == null)

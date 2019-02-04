@@ -1,0 +1,17 @@
+.flexcolumn {
+  display: flex;
+  flex-direction: column;
+}
+
+p {
+  margin-bottom: 0;
+}
+
+.mat-form-field {
+  padding-top: 1em;
+}
+
+.mat-radio-group {
+  flex-direction: column;
+  display: flex;
+}
