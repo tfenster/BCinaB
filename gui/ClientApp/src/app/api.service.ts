@@ -97,6 +97,9 @@ export class ApiService {
       env.push("password=" + guiDef.base.password);
       guiDef.base.password = ""; // forget password for storage in container labels
     }
+    if (guiDef.adv.credspec != undefined && guiDef.adv.credspec != "") {
+      guiDef.adv.credspec = "credentialspec=file://" + guiDef.adv.credspec;
+    }
 
     env.push("ExitOnError=N");
 
@@ -111,7 +114,7 @@ export class ApiService {
       TestToolkit: guiDef.adv.testToolkit,
       Network: guiDef.adv.network,
       License: guiDef.adv.license,
-      SecurityOpt: "credentialspec=file://" + guiDef.adv.credspec,
+      SecurityOpt: guiDef.adv.credspec,
       GuiDef: JSON.stringify(guiDef)
     };
     const headers = new HttpHeaders({
